@@ -3,12 +3,12 @@
 ## Production: 
 App: APP URL goes here
 
-Jenkins: Deployment pipeline link goes here
+Deployment: Deployment pipeline link goes here
 
 ## Staging:
 App: APP URL goes here
 
-Jenkins: Deployment pipeline link goes here
+Deployment: Deployment pipeline link goes here
 
 ## Docker Environment Initialization
 
