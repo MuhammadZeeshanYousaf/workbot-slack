@@ -1,18 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ESNext",
     "module": "commonjs",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
-    "allowJs": true,
-    "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
     "rootDir": "src",
-    "outDir": "dist"
-  },
-  "include": [
-    "src/**/*"
-  ]
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
+    "baseUrl": "src",
+    "paths": {
+      "~/*": ["*"]
+    }
+  }
 }
