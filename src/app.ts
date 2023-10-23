@@ -1,5 +1,8 @@
 import { App, LogLevel } from '@slack/bolt';
-import { FileInstallationStore } from '@slack/oauth';
+import { DbInstallationStore } from '~/store';
+import { Database } from '~/database';
+
+export const database = new Database();
 
 export const app = new App({
   logLevel: LogLevel.DEBUG,
@@ -17,5 +20,13 @@ export const app = new App({
     'channels:read',
     'channels:history'
   ],
-  installationStore: new FileInstallationStore()
+  installerOptions: {
+    directInstall: true
+  },
+  installationStore: new DbInstallationStore()
+});
+
+// Pass to next middleware
+app.use(async ({ next }) => {
+  await next();
 });
