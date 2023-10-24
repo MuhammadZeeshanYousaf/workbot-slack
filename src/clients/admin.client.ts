@@ -12,7 +12,11 @@ class AdminClient extends BaseClient {
     this.ClientKey = process.env.ADMIN_CLIENT_KEY!;
   }
 
-  async getUserToken(email: string): Promise<WorkhubUser> {
+  private async makeToken() {
+    return jwt.sign({ appId: this.ClientKey }, this.AdminSecret, { noTimestamp: true });
+  }
+
+  async getUserWithEmail(email?: string): Promise<WorkhubUser> {
     try {
       const newToken = await this.makeToken();
 
@@ -42,9 +46,9 @@ class AdminClient extends BaseClient {
     }
   }
 
-  async getUserCompanies(email: string, token: string) {
+  async getUserCompanies(email?: string, token: string | null = null) {
     try {
-      //   this.axios.defaults.baseURL = process.env.ADMIN_API_URL;
+      if (token !== undefined || token !== null || token !== '') token = await this.makeToken();
 
       const {
         status,
@@ -59,7 +63,7 @@ class AdminClient extends BaseClient {
         companies: companies?.length > 0 ? companies[0]?.companies : []
       };
     } catch (e) {
-      throw { status: e?.response?.status, message: e?.response?.data };
+      return { status: e?.response?.status, message: e?.response?.data };
     }
   }
 }

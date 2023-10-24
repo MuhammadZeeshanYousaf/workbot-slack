@@ -10,10 +10,6 @@ export class BaseClient {
     this.axios = axios.create({ baseURL, timeout: 20 * 1000 });
   }
 
-  protected makeToken() {
-    return jwt.sign({ appId: process.env.ADMIN_CLIENT_KEY! }, process.env.ADMIN_JWT_SECRET!, { noTimestamp: true });
-  }
-
   protected getFormDataHeaders(formData: FormData) {
     return {
       ...formData.getHeaders(),
