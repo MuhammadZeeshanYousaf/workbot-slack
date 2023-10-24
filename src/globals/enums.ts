@@ -8,3 +8,10 @@ export enum STATUSCODE {
   NOT_FOUND = 404,
   FORBIDDEN = 403
 }
+
+export enum SlackActions {
+  ConnectWorkhubText = 'Connect Workhub Account',
+  ConnectWorkhubId = 'connect_workhub_account',
+  SelectCompanyText = 'Select Company',
+  SelectCompanyId = 'select_company'
+}
