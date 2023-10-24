@@ -1,6 +1,6 @@
 import { DbClient } from '~/database/config';
 import { WorkbotSchema } from '~/database/schema';
-import { PutCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, GetCommand, DeleteCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { SlackInstallation } from '~/globals';
 
 export class Database {
@@ -54,5 +54,45 @@ export class Database {
     throw new Error('Error in fetching user data!');
   }
 
-  async delete(key: string) {}
+  async delete(key: string): Promise<any> {
+    try {
+      const command = new DeleteCommand({
+        TableName: this.TableName,
+        Key: {
+          teamId: key
+        }
+      });
+
+      return await this.Client.send(command);
+    } catch (e) {
+      console.error(e);
+    }
+
+    throw new Error('Error in deleting user data!');
+  }
+
+  async update(team_id: string, key: string, value: string): Promise<any> {
+    try {
+      const command = new UpdateCommand({
+        TableName: this.TableName,
+        Key: {
+          teamId: team_id
+        },
+        UpdateExpression: `set ${key} = :newValue`,
+        ExpressionAttributeValues: {
+          ':newValue': value
+        },
+        ReturnValues: 'ALL_NEW'
+      });
+
+      const response = await this.Client.send(command);
+      console.log(response);
+
+      return response;
+    } catch (e) {
+      console.error(e);
+    }
+
+    throw new Error('Error in updating user data!');
+  }
 }

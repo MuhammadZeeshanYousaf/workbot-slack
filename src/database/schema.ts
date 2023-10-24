@@ -5,4 +5,6 @@ export type WorkbotSchema = {
   botId?: string;
   botUserId?: string;
   userId?: string;
+  companyUuid: string | null;
+  email: string | null;
 };

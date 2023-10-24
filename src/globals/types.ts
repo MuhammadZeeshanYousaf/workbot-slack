@@ -1,10 +1,10 @@
 export type WorkhubUser = {
-  accessToken: string;
-  uuid: string;
+  accessToken?: string;
+  uuid?: string;
   profileImage?: string;
   imageUrl?: string;
   initials?: string;
-  email: string;
+  email?: string;
   tokenExpirationTime?: Number;
-  fullName: string;
+  fullName?: string;
 };
