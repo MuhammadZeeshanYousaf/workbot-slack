@@ -1,4 +1,5 @@
 import { app } from '~/app';
+import { HELP_MSG, MENTION_MSG } from '~/slack/blocks';
 
 app.command('/workbot', async args => {
   const {
@@ -10,27 +11,17 @@ app.command('/workbot', async args => {
 
   await ack();
 
-  // Respond the request
-  await say({
-    blocks: [
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `Hey there <@${text}>!`
-        },
-        accessory: {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: 'Click Me'
-          },
-          action_id: 'button_click'
-        }
-      }
-    ]
-  });
+  const queryMatch = text.match(/^\s*query\s(.*)/);
+  const helpMatch = /^\s*help\s/.test(text);
 
-  // Ephemeral message using response URL
-  await respond(`Please wait...`);
+  if (queryMatch) {
+    // Generate Query response from workbot
+    const query = queryMatch[1];
+
+    await say(`This is your query: ${query}`);
+  } else if (helpMatch) {
+    await say({ blocks: HELP_MSG });
+  } else {
+    await say({ blocks: MENTION_MSG });
+  }
 });
