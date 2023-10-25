@@ -71,7 +71,7 @@ export class Database {
     throw new Error('Error in deleting user data!');
   }
 
-  async update(team_id: string, key: string, value: string): Promise<any> {
+  async update(team_id: string, key: string, value: string | null): Promise<any> {
     try {
       const command = new UpdateCommand({
         TableName: this.TableName,
@@ -85,10 +85,7 @@ export class Database {
         ReturnValues: 'ALL_NEW'
       });
 
-      const response = await this.Client.send(command);
-      console.log(response);
-
-      return response;
+      return await this.Client.send(command);
     } catch (e) {
       console.error(e);
     }

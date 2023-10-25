@@ -13,10 +13,10 @@ app.event('app_mention', async ({ say }) => {
   });
 });
 
-app.event('app_uninstalled', async ({ context: { teamId: team_id } }) => {
+app.event('app_uninstalled', async ({ context: { teamId: team_id }, logger }) => {
   if (team_id !== undefined) {
     return await database.delete(team_id);
   }
 
-  throw new Error('Unauthorized request!');
+  logger.error('Unauthorized request!');
 });

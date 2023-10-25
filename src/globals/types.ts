@@ -8,3 +8,8 @@ export type WorkhubUser = {
   tokenExpirationTime?: Number;
   fullName?: string;
 };
+
+export type WorkHubCompany = {
+  name: string;
+  uuid: string;
+};

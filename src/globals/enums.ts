@@ -13,5 +13,9 @@ export enum SlackActions {
   ConnectWorkhubText = 'Connect Workhub Account',
   ConnectWorkhubId = 'connect_workhub_account',
   SelectCompanyText = 'Select Company',
-  SelectCompanyId = 'select_company'
+  SelectCompanyId = 'select_company',
+  LinkCompanyText = 'Link Company',
+  LinkCompanyId = 'link_company',
+  UnlinkCompanyText = 'Unlink Company',
+  UnlinkCompanyId = 'unlink_company'
 }

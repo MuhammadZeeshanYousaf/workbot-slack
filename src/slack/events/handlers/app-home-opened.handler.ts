@@ -12,14 +12,14 @@ export const handleAppHomeOpenedEventHandler = async ({
       limit: 1
     });
 
-    if (!messages?.length) {
+    if (messages?.length) {
       const { user } = await users.info({
         user: event.user
       });
 
       const [userEmail, userName] = [user?.profile?.email, user?.profile?.real_name];
 
-      say({
+      await say({
         blocks: [
           {
             type: 'section',
@@ -28,7 +28,11 @@ export const handleAppHomeOpenedEventHandler = async ({
               text:
                 'Hi there' +
                 ` *${userName}*` +
-                ' :wave: \n Great to see you here! \n\n Workbot is a platform that answer your queries from your knowledge base. Slack integration with Workbot makes it easier to query within slack. \n • To query from your workbot (use `/workbot query <your-query>`) \n • And take help using `/workbot help`'
+                ' :wave: \n Great to see you here! \n\n Workbot is a platform that answer your queries from your knowledge base. Slack integration with Workbot makes it easier to query within slack. \
+                \n • To query from your workbot use `/workbot query [your-query]`) \
+                \n • To take help use `/workbot help` \
+                \n • To link company `/workbot link`\
+                \n • To unlink company `/workbot unlink`'
             }
           },
           {
