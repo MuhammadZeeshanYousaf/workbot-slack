@@ -1,6 +1,6 @@
 import { app } from '~/app';
 import { HELP_MSG, MENTION_MSG } from '~/slack/blocks';
-import { linkCompanySlashHandler, unlinkCompanySlashHandler } from './handlers';
+import { linkCompanySlashHandler, queryHandler, unlinkCompanySlashHandler } from './handlers';
 
 app.command('/workbot', async args => {
   const {
@@ -19,8 +19,8 @@ app.command('/workbot', async args => {
   if (queryMatch) {
     // Generate Query response from workbot
     const query = queryMatch[1];
-
-    await say(`This is your query: ${query}`);
+    await say(`Please wait...`);
+    await queryHandler(args, query);
   } else if (helpMatch) {
     await say({ blocks: HELP_MSG });
   } else if (linkMatch) {

@@ -1,4 +1,4 @@
-import { STATUSCODE, WorkHubCompany } from '~/globals';
+import { STATUSCODE, WorkHubCompany, WorkhubUser } from '~/globals';
 import { AdminBaseClient } from './adminbase.client';
 class AdminClient extends AdminBaseClient {
   private workhubCompanies: Array<WorkHubCompany>;
@@ -10,6 +10,10 @@ class AdminClient extends AdminBaseClient {
 
   private async getCompaniesCache(key: string) {
     // write redis logic to get companies from cache
+  }
+
+  private async getUserCache(key: string) {
+    // write redis logic to get user data from cache
   }
 
   async fetchUserCompanies(email: string, token: string | null = null): Promise<Array<WorkHubCompany>> {
@@ -25,6 +29,13 @@ class AdminClient extends AdminBaseClient {
     }
 
     return Promise.resolve(this.workhubCompanies);
+  }
+
+  async fetchUserData(email: string): Promise<WorkhubUser> {
+    const cacheUser = this.getUserCache(email);
+    // Check the user data from cache first
+
+    return await this.getUserWithEmail(email);
   }
 }
 
