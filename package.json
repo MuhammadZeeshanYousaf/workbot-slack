@@ -20,7 +20,8 @@
     "axios": "^1.5.1",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^9.0.2",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "redis": "^4.6.10"
   },
   "devDependencies": {
     "@types/node": "^14.14.35",
