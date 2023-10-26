@@ -1,7 +1,7 @@
 import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { WorkHubCompany } from '~/globals';
-import { AllMiddlewareArgs, SlackAction, SlackActionMiddlewareArgs, SocketModeFunctions } from '@slack/bolt';
+import { AllMiddlewareArgs, SlackActionMiddlewareArgs } from '@slack/bolt';
 import { companiesBlock } from '~/slack/blocks';
 
 export const connectWorkhubHandler = async ({

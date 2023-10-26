@@ -1,7 +1,6 @@
 import { DbClient } from '~/database/config';
 import { WorkbotSchema } from '~/database/schema';
 import { PutCommand, GetCommand, DeleteCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { SlackInstallation } from '~/globals';
 
 export class Database {
   private Client = DbClient;
@@ -27,7 +26,7 @@ export class Database {
     throw new Error('Error in storing user data!');
   }
 
-  async get(key: string): Promise<SlackInstallation> {
+  async get(key: string): Promise<WorkbotSchema> {
     try {
       const command = new GetCommand({
         TableName: this.TableName,
@@ -38,15 +37,7 @@ export class Database {
 
       const data = await this.Client.send(command);
 
-      const installation: SlackInstallation = {
-        bot: {
-          id: data.Item?.botId,
-          token: data.Item?.botToken,
-          userId: data.Item?.botUserId
-        }
-      };
-
-      return installation;
+      return data.Item as WorkbotSchema;
     } catch (e) {
       console.error(e);
     }

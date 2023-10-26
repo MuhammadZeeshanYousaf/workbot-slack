@@ -1,9 +1,9 @@
 export type WorkbotSchema = {
-  teamId?: string;
-  botToken?: string;
+  teamId: string;
+  botId: string;
+  botToken: string;
+  botUserId: string;
   userToken?: string;
-  botId?: string;
-  botUserId?: string;
   userId?: string;
   companyUuid: string | null;
   email: string | null;

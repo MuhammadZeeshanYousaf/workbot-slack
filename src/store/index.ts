@@ -10,32 +10,43 @@ export class DbInstallationStore implements InstallationStore {
   async storeInstallation(installation: Installation, logger?: Logger): Promise<any> {
     if (installation.team?.id !== undefined && installation.bot?.token !== undefined) {
       const data: WorkbotSchema = {
-        teamId: installation.team?.id,
-        botToken: installation.bot?.token,
-        userToken: installation.user.token,
-        botId: installation.bot?.id,
-        botUserId: installation.bot?.userId,
-        userId: installation.user.id,
+        teamId: installation.team.id,
+        botId: installation.bot.id,
+        botToken: installation.bot.token,
+        botUserId: installation.bot.userId,
+        userToken: installation.user?.token,
+        userId: installation.user?.id,
         companyUuid: null,
         email: null
       };
       return await database.set(data);
     }
 
-    throw new Error('Data is invalid!');
+    logger?.error('Installation data is invalid!');
   }
+
   async fetchInstallation(installQuery: InstallationQuery<boolean>, logger?: Logger): Promise<SlackInstallation | any> {
     if (installQuery.teamId !== undefined) {
-      return await database.get(installQuery.teamId);
+      const data: WorkbotSchema = await database.get(installQuery.teamId);
+
+      const installation: SlackInstallation = {
+        bot: {
+          id: data?.botId,
+          token: data.botToken,
+          userId: data?.botUserId
+        }
+      };
+      return installation;
     }
 
-    throw new Error('teamId does not exist!');
+    logger?.error('teamId does not exist!');
   }
+
   async deleteInstallation(installQuery: InstallationQuery<boolean>, logger?: Logger): Promise<void> {
     if (installQuery.teamId !== undefined) {
       return await database.delete(installQuery.teamId);
     }
 
-    throw new Error('teamId does not exist!');
+    logger?.error('teamId does not exist!');
   }
 }
