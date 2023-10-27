@@ -17,7 +17,7 @@ export const handleAppHomeOpenedEventHandler = async ({
         user: event.user
       });
 
-      const [userEmail, userName] = [user?.profile?.email, user?.profile?.real_name];
+      const userName = user?.profile?.real_name;
 
       await say({
         blocks: [

@@ -20,7 +20,7 @@ export const getCacheClient = async () => {
 export const cacheClient = (async () =>
   getCacheClient()
     .then(result => {
-      console.log(`⚡️ Redis is running on port:${process.env.REDIS_PORT}`);
+      console.log(`🚀 Redis connected on port:${process.env.REDIS_PORT}`);
 
       return (redisClient = result);
     })

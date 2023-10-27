@@ -19,7 +19,7 @@ export const connectWorkhubHandler = async ({
   const companies: Array<WorkHubCompany> = await adminClient.fetchUserCompanies(userEmail);
 
   if (companies.length < 1) {
-    return await respond('No company found on your email!');
+    return await respond({ replace_original: false, text: 'No company  found on your email!' });
   } else if (teamId !== undefined) {
     try {
       await respond(companiesBlock(companies));
