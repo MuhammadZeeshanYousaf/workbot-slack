@@ -12,7 +12,7 @@ export const handleAppHomeOpenedEventHandler = async ({
       limit: 1
     });
 
-    if (messages?.length) {
+    if (!messages?.length) {
       const { user } = await users.info({
         user: event.user
       });
