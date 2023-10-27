@@ -1,7 +1,19 @@
-import { app } from '~/app';
+import { app, database } from '~/app';
+import { SlackActions } from '~/globals';
+import { connectWorkhubHandler, linkCompanyHandler, unlinkCompanyHandler } from './handlers';
 
-app.action('button_click', async ({ body, ack, say }) => {
-  // Acknowledge the action
-  await ack();
-  await say(`<@${body.user.id}> clicked the button`);
+app.action(SlackActions.ConnectWorkhubId, async args => {
+  await args.ack();
+  await args.say('Please wait, we are checking your account...');
+  await connectWorkhubHandler(args);
+});
+
+app.action(SlackActions.SelectCompanyId, async args => {
+  await args.ack();
+  await linkCompanyHandler(args);
+});
+
+app.action(SlackActions.UnlinkCompanyId, async args => {
+  await args.ack();
+  await unlinkCompanyHandler(args);
 });
