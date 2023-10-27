@@ -31,12 +31,16 @@ export class AdminBaseClient extends BaseClient {
         }
       );
 
-      let userData: WorkhubUser = jwt.verify(token, this.AdminSecret) as WorkhubUser;
-      const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-      userData.accessToken = token;
-      userData.tokenExpirationTime = new Date().getTime() + oneDayInMilliseconds;
+      const userData = jwt.verify(token, this.AdminSecret) as WorkhubUser;
 
-      return userData;
+      const workhubUser: WorkhubUser = {
+        email: userData.email,
+        fullName: userData.fullName,
+        uuid: userData.uuid,
+        accessToken: token
+      };
+
+      return workhubUser;
     } catch (e) {
       if (this.hasStatus(e, STATUSCODE.NOT_FOUND)) {
         throw { message: "You don't have an existing account on WorkHub", statusCode: STATUSCODE.NOT_FOUND };
