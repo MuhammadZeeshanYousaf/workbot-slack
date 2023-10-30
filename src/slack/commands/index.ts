@@ -19,9 +19,8 @@ app.command('/workbot', async args => {
   if (queryMatch) {
     // Generate Query response from workbot
     const query = queryMatch[1];
-    const message = await say(`Please wait....`);
 
-    await queryHandler(args, query, message);
+    await queryHandler(args, query);
   } else if (helpMatch) {
     await say({ blocks: HELP_MSG });
   } else if (linkMatch) {

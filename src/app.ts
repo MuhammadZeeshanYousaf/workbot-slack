@@ -10,7 +10,7 @@ export const app = new App({
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   stateSecret: process.env.SLACK_STATE_SECRET,
-  scopes: ['app_mentions:read', 'chat:write', 'commands', 'users:read', 'users:read.email'],
+  scopes: ['app_mentions:read', 'chat:write', 'commands', 'users:read', 'users:read.email', 'im:history'],
   installerOptions: {
     directInstall: true
   },
