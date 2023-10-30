@@ -1,14 +1,17 @@
 import { SlackActions } from '~/globals';
 import { RespondArguments } from '@slack/bolt';
 
-export const unlinkCompanyBlock = (companyName): RespondArguments => {
+export const unlinkCompanyBlock = (
+  messageText,
+  buttonText: string = SlackActions.LinkCompanyText
+): RespondArguments => {
   return {
     blocks: [
       {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `You have unlinked *${companyName}* successfully`
+          text: messageText
         }
       },
       {
@@ -18,7 +21,7 @@ export const unlinkCompanyBlock = (companyName): RespondArguments => {
             type: 'button',
             text: {
               type: 'plain_text',
-              text: SlackActions.LinkCompanyText
+              text: buttonText
             },
             action_id: SlackActions.ConnectWorkhubId
           }

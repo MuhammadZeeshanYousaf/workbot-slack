@@ -11,7 +11,7 @@ export const unlinkCompanyHandler = async ({
   if (action.type === 'button' && teamId !== undefined) {
     await database.update(teamId, 'companyUuid', null);
 
-    await say(unlinkCompanyBlock(action.value));
+    await say(unlinkCompanyBlock('You have unlinked your WorkHub company successfully.'));
   } else {
     logger.error('Invalid Request!');
   }

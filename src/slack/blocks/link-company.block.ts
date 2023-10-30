@@ -7,7 +7,7 @@ export const linkCompanyBlock = (companyName): RespondArguments => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `You have successfully linked *${companyName}*`
+          text: `You have successfully linked *${companyName}*.`
         }
       }
     ]
