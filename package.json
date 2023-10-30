@@ -1,7 +1,7 @@
 {
   "name": "workhub-workbot-slack",
   "version": "1.0.0",
-  "description": "Workhub Sack app for Workbot",
+  "description": "WorkHub Sack app for WorkBot",
   "main": "./dist",
   "scripts": {
     "build": "tsc",

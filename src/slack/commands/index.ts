@@ -24,7 +24,7 @@ app.command('/workbot', async args => {
   } else if (helpMatch) {
     await say({ blocks: HELP_MSG });
   } else if (linkMatch) {
-    await args.say('Please wait, we are checking your account...');
+    await args.say('Please wait, while we are checking your account...');
     await linkCompanySlashHandler(args);
   } else if (unlinkMatch) {
     await unlinkCompanySlashHandler(args);

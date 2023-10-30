@@ -10,8 +10,8 @@ export enum STATUSCODE {
 }
 
 export enum SlackActions {
-  ConnectWorkhubText = 'Connect Workhub Account',
-  ConnectWorkhubId = 'connect_workhub_account',
+  ConnectWorkhubText = 'Connect WorkHub Company',
+  ConnectWorkhubId = 'connect_workhub_company',
   SelectCompanyText = 'Select Company',
   SelectCompanyId = 'select_company',
   LinkCompanyText = 'Link Company',

@@ -5,7 +5,7 @@ export const HELP_MSG: Array<KnownBlock> = [
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: '*--Workbot Interactivity--*'
+      text: '*--WorkBot Interactivity--*'
     }
   },
   {
