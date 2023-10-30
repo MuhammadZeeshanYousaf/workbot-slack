@@ -8,7 +8,7 @@ export const unlinkCompanyBlock = (companyName): RespondArguments => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `*${companyName}* unlinked :ballot_box_with_check:`
+          text: `You have unlinked *${companyName}* successfully`
         }
       },
       {
@@ -20,8 +20,7 @@ export const unlinkCompanyBlock = (companyName): RespondArguments => {
               type: 'plain_text',
               text: SlackActions.LinkCompanyText
             },
-            action_id: SlackActions.ConnectWorkhubId,
-            style: 'primary'
+            action_id: SlackActions.ConnectWorkhubId
           }
         ]
       }

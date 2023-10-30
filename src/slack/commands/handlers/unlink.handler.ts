@@ -5,10 +5,14 @@ import { unlinkCompanyBlock } from '~/slack/blocks';
 export const unlinkCompanySlashHandler = async ({
   context: { teamId: teamId },
   say,
+  respond,
   logger
 }: SlackCommandMiddlewareArgs & AllMiddlewareArgs) => {
   if (teamId !== undefined) {
     await database.update(teamId, 'companyUuid', null);
-    await say(unlinkCompanyBlock('Company'));
+
+    await respond(unlinkCompanyBlock('Company'));
+  } else {
+    logger.error('teamId does not exist');
   }
 };

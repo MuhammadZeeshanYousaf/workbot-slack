@@ -20,7 +20,7 @@ export const companiesBlock = (companies): RespondArguments => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: '*Select company to link:*'
+          text: '*Select your WorkHub Company*'
         }
       },
       {
