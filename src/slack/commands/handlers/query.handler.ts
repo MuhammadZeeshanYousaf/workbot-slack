@@ -1,30 +1,60 @@
 import { AllMiddlewareArgs, SlackCommandMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
-import { ChatPostMessageResponse } from '@slack/web-api';
 import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { workbotClient } from '~/clients/workbot.client';
+import { PostQueryParams, STATUSCODE } from '~/globals';
 
 export const queryHandler = async (
   args: (SlackEventMiddlewareArgs<'message'> | SlackCommandMiddlewareArgs) & AllMiddlewareArgs,
-  userQuery: string
+  userQuery: string,
+  channelId: string
 ) => {
   const {
     say,
-    client,
     context: { teamId: teamId },
     logger
   } = args;
 
   if (teamId !== undefined) {
-    const { email, companyUuid } = await database.get(teamId);
+    const data = await database.get(teamId);
+    const { email, companyUuid } = data;
+    let channelConversations = data.channelConversations;
+    if (!channelConversations) channelConversations = {};
+    let conversationUuid = channelConversations?.[channelId];
+
     if (companyUuid !== undefined && companyUuid !== null && companyUuid !== '') {
       const message = await say(`Please wait....`);
       const { accessToken } = await adminClient.fetchUserData(email!);
 
-      const params = { userQuery: userQuery, userToken: accessToken, companyUuid: companyUuid };
-      await workbotClient.getQueryResponse(params, client, message, logger);
+      if (conversationUuid === undefined || conversationUuid === null) {
+        let conversationResponse = await workbotClient.createConversation(
+          {
+            userToken: accessToken,
+            companyUuid: companyUuid
+          },
+          logger
+        );
+
+        if (conversationResponse.status === STATUSCODE.CREATED) {
+          conversationUuid = channelConversations[channelId] = conversationResponse.uuid;
+          await database.update(teamId, 'channelConversations', channelConversations);
+        } else {
+          return await say('Error in creating your conversation!');
+        }
+      }
+
+      const params: PostQueryParams = {
+        userQuery: userQuery,
+        userToken: accessToken,
+        companyUuid: companyUuid,
+        conversationUuid: conversationUuid,
+        channelConversations: channelConversations,
+        channelId: channelId
+      };
+
+      await workbotClient.postQueryResponse(params, args, message);
     } else {
-      await say(`No linked WorkHub company found!`);
+      await say(`No linked WorkHub Company found!`);
     }
   } else {
     logger.error('Invalid Request!');

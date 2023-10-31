@@ -62,7 +62,7 @@ export class Database {
     throw new Error('Error in deleting user data!');
   }
 
-  async update(team_id: string, key: string, value: string | null): Promise<any> {
+  async update(team_id: string, key: string, value: string | object | null): Promise<any> {
     try {
       const command = new UpdateCommand({
         TableName: this.TableName,

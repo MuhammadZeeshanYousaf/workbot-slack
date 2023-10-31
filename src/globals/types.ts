@@ -9,3 +9,12 @@ export type WorkHubCompany = {
   name: string;
   uuid: string;
 };
+
+export type PostQueryParams = {
+  userQuery: string;
+  userToken: string;
+  companyUuid: string;
+  conversationUuid: string;
+  channelConversations: object;
+  channelId: string;
+};
