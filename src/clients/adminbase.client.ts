@@ -37,7 +37,7 @@ export class AdminBaseClient extends BaseClient {
         email: userData.email,
         fullName: userData.fullName,
         uuid: userData.uuid,
-        accessToken: token
+        userToken: token
       };
 
       return workhubUser;

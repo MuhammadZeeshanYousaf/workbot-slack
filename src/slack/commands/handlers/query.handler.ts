@@ -17,20 +17,20 @@ export const queryHandler = async (
 
   if (teamId !== undefined) {
     const data = await database.get(teamId);
-    const { email, companyUuid } = data;
+    const { linkedBy, linkedCompanyUuid } = data;
     let channelConversations = data.channelConversations;
     if (!channelConversations) channelConversations = {};
     let conversationUuid = channelConversations?.[channelId];
 
-    if (companyUuid !== undefined && companyUuid !== null && companyUuid !== '') {
+    if (linkedCompanyUuid !== undefined && linkedCompanyUuid !== null && linkedCompanyUuid !== '') {
       const message = await say(`Please wait....`);
-      const { accessToken } = await adminClient.fetchUserData(email!);
+      const { userToken } = await adminClient.fetchUserData(linkedBy!);
 
       if (conversationUuid === undefined || conversationUuid === null) {
         let conversationResponse = await workbotClient.createConversation(
           {
-            userToken: accessToken,
-            companyUuid: companyUuid
+            userToken: userToken,
+            companyUuid: linkedCompanyUuid
           },
           logger
         );
@@ -45,8 +45,8 @@ export const queryHandler = async (
 
       const params: PostQueryParams = {
         userQuery: userQuery,
-        userToken: accessToken,
-        companyUuid: companyUuid,
+        userToken: userToken,
+        companyUuid: linkedCompanyUuid,
         conversationUuid: conversationUuid,
         channelConversations: channelConversations,
         channelId: channelId

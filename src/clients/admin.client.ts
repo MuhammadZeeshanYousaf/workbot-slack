@@ -9,7 +9,7 @@ class AdminClient extends AdminBaseClient {
   constructor() {
     super();
     this.workhubCompanies = [];
-    this.workhubUser = { accessToken: '' };
+    this.workhubUser = { userToken: '' };
   }
 
   async fetchUserCompanies(email: string, token: string | null = null): Promise<Array<WorkHubCompany>> {
@@ -33,7 +33,7 @@ class AdminClient extends AdminBaseClient {
 
   async fetchUserData(email: string): Promise<WorkhubUser> {
     const cacheUser = await this.getUserCache(email);
-    const token = cacheUser?.accessToken;
+    const token = cacheUser?.userToken;
 
     if (token === null || token === undefined || token.length === 0) {
       this.workhubUser = await this.getUserWithEmail(email);

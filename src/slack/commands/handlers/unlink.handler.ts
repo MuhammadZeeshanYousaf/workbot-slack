@@ -8,9 +8,9 @@ export const unlinkCompanySlashHandler = async ({
   logger
 }: SlackCommandMiddlewareArgs & AllMiddlewareArgs) => {
   if (teamId !== undefined) {
-    const { companyUuid } = await database.get(teamId);
+    const { linkedCompanyUuid } = await database.get(teamId);
 
-    if (companyUuid === null) {
+    if (linkedCompanyUuid === null) {
       await respond(unlinkCompanyBlock('You did not link your WorkHub company yet!'));
     } else {
       await database.update(teamId, 'companyUuid', null);

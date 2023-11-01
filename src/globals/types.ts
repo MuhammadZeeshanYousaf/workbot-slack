@@ -2,7 +2,7 @@ export type WorkhubUser = {
   email?: string;
   fullName?: string;
   uuid?: string;
-  accessToken: string;
+  userToken: string;
 };
 
 export type WorkHubCompany = {

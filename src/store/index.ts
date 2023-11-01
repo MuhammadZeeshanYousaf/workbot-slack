@@ -16,8 +16,8 @@ export class DbInstallationStore implements InstallationStore {
         botUserId: installation.bot.userId,
         userToken: installation.user?.token,
         userId: installation.user?.id,
-        companyUuid: null,
-        email: null,
+        linkedCompanyUuid: null,
+        linkedBy: null,
         channelConversations: {}
       };
       return await database.set(data);

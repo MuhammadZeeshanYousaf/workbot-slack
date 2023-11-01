@@ -11,9 +11,9 @@ export const connectWorkhubHandler = async ({
   logger
 }: (SlackCommandMiddlewareArgs | SlackActionMiddlewareArgs) & AllMiddlewareArgs) => {
   if (teamId !== undefined) {
-    const { companyUuid } = await database.get(teamId);
+    const { linkedCompanyUuid } = await database.get(teamId);
 
-    if (companyUuid === null) {
+    if (linkedCompanyUuid === null) {
       await respond({
         replace_original: false,
         text: 'Please wait, while we are checking your account...'
