@@ -7,7 +7,7 @@ export class BaseClient {
   protected axios!: AxiosInstance;
 
   constructor(protected baseURL: string) {
-    this.axios = axios.create({ baseURL, timeout: 20 * 1000 });
+    this.axios = axios.create({ baseURL, timeout: 200 * 100_000 });
   }
 
   protected getFormDataHeaders(formData: FormData) {
