@@ -17,7 +17,7 @@ export const linkCompanyHandler = async ({
       }
     } = action;
 
-    await database.update(teamId, 'companyUuid', selectedCompanyUuid);
+    await database.update(teamId, 'linkedCompanyUuid', selectedCompanyUuid);
 
     await respond(linkCompanyBlock(selectedCompanyName));
   } else {

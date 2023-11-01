@@ -9,7 +9,7 @@ export const unlinkCompanyHandler = async ({
   logger
 }: SlackActionMiddlewareArgs & AllMiddlewareArgs) => {
   if (action.type === 'button' && teamId !== undefined) {
-    await database.update(teamId, 'companyUuid', null);
+    await database.update(teamId, 'linkedCompanyUuid', null);
 
     await say(unlinkCompanyBlock('You have unlinked your WorkHub company successfully.'));
   } else {

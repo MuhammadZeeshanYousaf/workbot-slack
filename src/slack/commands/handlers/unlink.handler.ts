@@ -13,7 +13,7 @@ export const unlinkCompanySlashHandler = async ({
     if (linkedCompanyUuid === null) {
       await respond(unlinkCompanyBlock('You did not link your WorkHub company yet!'));
     } else {
-      await database.update(teamId, 'companyUuid', null);
+      await database.update(teamId, 'linkedCompanyUuid', null);
 
       await respond(unlinkCompanyBlock('You have unlinked your WorkHub company successfully.', 'Link Again'));
     }

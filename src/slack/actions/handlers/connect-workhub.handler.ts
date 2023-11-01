@@ -34,7 +34,7 @@ export const connectWorkhubHandler = async ({
         } catch (e) {
           logger.error(e);
         } finally {
-          await database.update(teamId, 'email', userEmail);
+          await database.update(teamId, 'linkedBy', userEmail);
         }
       }
     } else {
