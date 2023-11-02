@@ -1,6 +1,6 @@
 import { DbClient } from '~/database/config';
 import { WorkbotSchema } from '~/database/schema';
-import { PutCommand, GetCommand, DeleteCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, GetCommand, DeleteCommand, UpdateCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 export class Database {
   private Client = DbClient;
@@ -82,5 +82,25 @@ export class Database {
     }
 
     throw new Error('Error in updating user data!');
+  }
+
+  async scanByLinkedBy(linkedByValue: string): Promise<WorkbotSchema[]> {
+    try {
+      const command = new ScanCommand({
+        TableName: this.TableName,
+        FilterExpression: 'linkedBy = :value',
+        ExpressionAttributeValues: {
+          ':value': linkedByValue
+        }
+      });
+
+      const data = await this.Client.send(command);
+
+      return data.Items as WorkbotSchema[];
+    } catch (e) {
+      console.error(e);
+    }
+
+    throw new Error('Error in scanning by linkedBy (WorkHub email) key attribute!');
   }
 }
