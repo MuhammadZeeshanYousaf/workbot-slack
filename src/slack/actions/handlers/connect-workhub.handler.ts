@@ -2,7 +2,7 @@ import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { WorkHubCompany } from '~/globals';
 import { AllMiddlewareArgs, SlackActionMiddlewareArgs, SlackCommandMiddlewareArgs } from '@slack/bolt';
-import { companiesBlock } from '~/slack/blocks';
+import { companiesBlock, linkCompanyBlock } from '~/slack/blocks';
 
 export const connectWorkhubHandler = async ({
   client: { users },
@@ -28,6 +28,10 @@ export const connectWorkhubHandler = async ({
 
       if (companies.length < 1) {
         await respond({ replace_original: false, text: 'No company found on your email!' });
+      } else if (companies.length === 1) {
+        const { uuid, name } = companies[0];
+        await database.update(teamId, 'linkedCompanyUuid', uuid);
+        await respond(linkCompanyBlock(name));
       } else {
         try {
           await respond(companiesBlock(companies));
