@@ -5,7 +5,7 @@ export const HELP_MSG: Array<KnownBlock> = [
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: 'For query: `/workbot query [question]`'
+      text: `For query: <@${process.env.BOT_USER_ID}> \`[question]\` or \`/workbot query [question]\``
     }
   },
   {

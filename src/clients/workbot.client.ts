@@ -30,7 +30,8 @@ class Workbot extends BaseClient {
 
   async postQueryResponse(
     params: PostQueryParams,
-    args: (SlackEventMiddlewareArgs<'message'> | SlackCommandMiddlewareArgs) & AllMiddlewareArgs,
+    args: (SlackEventMiddlewareArgs<'app_mention'> | SlackEventMiddlewareArgs<'message'> | SlackCommandMiddlewareArgs) &
+      AllMiddlewareArgs,
     message: ChatPostMessageResponse,
     retryOnError = true
   ) {
