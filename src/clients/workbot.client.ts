@@ -58,7 +58,7 @@ class Workbot extends BaseClient {
         const dataString: string = chunk.toString('utf8');
         queryResponse.push(dataString);
 
-        if (chunk.length > 2) {
+        if (chunk.length > 0) {
           try {
             client.chat
               .update({
