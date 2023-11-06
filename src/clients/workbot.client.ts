@@ -53,10 +53,18 @@ class Workbot extends BaseClient {
       );
       const stream = response.data;
       const queryResponse: string[] = [];
+      let maxThread = 0;
 
-      stream.on('data', (chunk: Buffer) => {
+      stream.on('data', async (chunk: Buffer) => {
         const dataString: string = chunk.toString('utf8');
+        console.info('Query Response meta data => Chunk length:', chunk.length, 'Data:', dataString);
         queryResponse.push(dataString);
+        ++maxThread;
+
+        if (maxThread < 10) {
+          return;
+        }
+        maxThread = 0;
 
         if (chunk.length > 0) {
           try {
@@ -69,12 +77,30 @@ class Workbot extends BaseClient {
               .then(res => {
                 message = res;
               });
+            return;
           } catch (e) {
             logger.error('Tier pause in message updating:', e.message);
           }
         }
+      });
 
-        console.info('Query Response meta data => Chunk length:', chunk.length, 'Data:', dataString);
+      stream.on('end', () => {
+        try {
+          client.chat
+            .update({
+              channel: message.channel!,
+              ts: message.ts!,
+              text: `${mrkdwn(queryResponse.join('')).text} `
+            })
+            .then(res => {
+              message = res;
+            });
+          return;
+        } catch (e) {
+          logger.error('Tier pause in message updating:', e.message);
+        }
+        console.info('Query Response ended');
+        stream.destroy();
       });
 
       return { status: response.status };
