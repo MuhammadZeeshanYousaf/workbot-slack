@@ -5,14 +5,7 @@ export const HELP_MSG: Array<KnownBlock> = [
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: `For query: <@${process.env.BOT_USER_ID}> \`[question]\` or \`/workbot query [question]\``
-    }
-  },
-  {
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: 'For help: `/workbot help`'
+      text: `To ask from your WorkBot use: <@${process.env.BOT_USER_ID}> _[question]_`
     }
   },
   {
@@ -27,6 +20,13 @@ export const HELP_MSG: Array<KnownBlock> = [
     text: {
       type: 'mrkdwn',
       text: 'To unlink company: `/workbot unlink`'
+    }
+  },
+  {
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: 'For help: `/workbot help`'
     }
   }
 ];
