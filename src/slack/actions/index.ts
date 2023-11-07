@@ -4,7 +4,6 @@ import { connectWorkhubHandler, linkCompanyHandler, unlinkCompanyHandler } from 
 
 app.action(SlackActions.ConnectWorkhubId, async args => {
   await args.ack();
-  await args.say('Please wait, we are checking your account...');
   await connectWorkhubHandler(args);
 });
 

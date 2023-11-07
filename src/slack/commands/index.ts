@@ -6,7 +6,8 @@ app.command('/workbot', async args => {
   const {
     ack,
     say,
-    command: { text }
+    command: { text },
+    payload: { channel_id: channelId }
   } = args;
 
   await ack();
@@ -19,12 +20,11 @@ app.command('/workbot', async args => {
   if (queryMatch) {
     // Generate Query response from workbot
     const query = queryMatch[1];
-    await say(`Please wait...`);
-    await queryHandler(args, query);
+
+    await queryHandler(args, query, channelId);
   } else if (helpMatch) {
     await say({ blocks: HELP_MSG });
   } else if (linkMatch) {
-    await args.say('Please wait, we are checking your account...');
     await linkCompanySlashHandler(args);
   } else if (unlinkMatch) {
     await unlinkCompanySlashHandler(args);

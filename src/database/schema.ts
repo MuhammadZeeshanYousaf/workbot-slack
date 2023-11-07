@@ -5,6 +5,7 @@ export type WorkbotSchema = {
   botUserId: string;
   userToken?: string;
   userId?: string;
-  companyUuid: string | null;
-  email: string | null;
+  linkedCompanyUuid: string | null;
+  linkedBy: string | null;
+  channelConversations: object;
 };

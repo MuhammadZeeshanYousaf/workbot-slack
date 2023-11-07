@@ -5,14 +5,7 @@ export const HELP_MSG: Array<KnownBlock> = [
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: '*--Workbot Interactivity--*'
-    }
-  },
-  {
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: 'For query: `/workbot query <your-query>`'
+      text: 'For query: `/workbot query [question]`'
     }
   },
   {
@@ -43,7 +36,7 @@ export const MENTION_MSG: Array<KnownBlock> = [
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: 'These are only commands which I support:'
+      text: 'These are the only commands which I support:'
     }
   },
   ...HELP_MSG

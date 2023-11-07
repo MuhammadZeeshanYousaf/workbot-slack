@@ -6,6 +6,7 @@ export const linkCompanyHandler = async ({
   action,
   context: { teamId: teamId },
   say,
+  respond,
   logger
 }: SlackActionMiddlewareArgs & AllMiddlewareArgs) => {
   if (action?.type === 'static_select' && teamId !== undefined) {
@@ -16,9 +17,9 @@ export const linkCompanyHandler = async ({
       }
     } = action;
 
-    await database.update(teamId, 'companyUuid', selectedCompanyUuid);
+    await database.update(teamId, 'linkedCompanyUuid', selectedCompanyUuid);
 
-    await say(linkCompanyBlock(selectedCompanyName));
+    await respond(linkCompanyBlock(selectedCompanyName));
   } else {
     logger.error('Invalid Request!');
   }

@@ -7,7 +7,7 @@ export const linkCompanyBlock = (companyName): RespondArguments => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `*${companyName}* linked :white_check_mark:`
+          text: `You have successfully linked *${companyName}*.`
         }
       }
     ]

@@ -1,13 +1,15 @@
 import { app } from '~/app';
-import { HELP_MSG } from '../blocks';
+import { queryHandler } from '~/slack/commands/handlers';
 
-// Listens to incoming messages that contain "hello"
-app.message('help', async ({ message, say }) => {
+// Listens to incoming messages from Messages tab
+app.message(async args => {
   // Filter out message events with subtypes (see https://api.slack.com/events/message)
-  if (message.subtype === undefined || message.subtype === 'bot_message') {
-    // say() sends a message to the channel where the event was triggered
-    await say({
-      blocks: HELP_MSG
-    });
+  const {
+    message,
+    payload: { channel: channelId }
+  } = args;
+
+  if ((message.subtype === undefined || message.subtype === 'bot_message') && message.text !== undefined) {
+    await queryHandler(args, message.text, channelId);
   }
 });

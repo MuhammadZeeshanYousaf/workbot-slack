@@ -1,6 +1,7 @@
 import { App, LogLevel } from '@slack/bolt';
 import { DbInstallationStore } from '~/store';
 import { Database } from '~/database';
+import { SlackCallbacks } from './utils/callbacks';
 
 export const database = new Database();
 
@@ -10,18 +11,10 @@ export const app = new App({
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   stateSecret: process.env.SLACK_STATE_SECRET,
-  scopes: [
-    'chat:write',
-    'commands',
-    'users:read',
-    'users:read.email',
-    'im:history',
-    'mpim:history',
-    'channels:read',
-    'channels:history'
-  ],
+  scopes: ['app_mentions:read', 'chat:write', 'commands', 'users:read', 'users:read.email', 'im:history'],
   installerOptions: {
-    directInstall: true
+    directInstall: true,
+    callbackOptions: new SlackCallbacks()
   },
   installationStore: new DbInstallationStore()
 });
