@@ -8,4 +8,6 @@ export type WorkbotSchema = {
   linkedCompanyUuid: string | null;
   linkedBy: string | null;
   channelConversations: object;
+  installedAt: string;
+  uninstalledAt: string | null;
 };

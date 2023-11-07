@@ -18,7 +18,9 @@ export class DbInstallationStore implements InstallationStore {
         userId: installation.user?.id,
         linkedCompanyUuid: null,
         linkedBy: null,
-        channelConversations: {}
+        channelConversations: {},
+        installedAt: new Date().toISOString(),
+        uninstalledAt: null
       };
       return await database.set(data);
     }

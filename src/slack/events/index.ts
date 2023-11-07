@@ -27,7 +27,7 @@ app.event('app_mention', async args => {
 
 app.event('app_uninstalled', async ({ context: { teamId: team_id }, logger }) => {
   if (team_id !== undefined) {
-    return await database.delete(team_id);
+    return await database.update(team_id, 'uninstalledAt', new Date().toISOString());
   }
 
   logger.error('Unauthorized request!');
