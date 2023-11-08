@@ -5,7 +5,7 @@ export const HELP_MSG: Array<KnownBlock> = [
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: `To ask from your WorkBot use: <@${process.env.BOT_USER_ID}> _[question]_`
+      text: `To ask from your WorkBot use: *@WorkBot* _[question]_`
     }
   },
   {

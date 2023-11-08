@@ -29,8 +29,8 @@ export const handleAppHomeOpenedEventHandler = async ({
                 'Hi there' +
                 ` *${userName}*` +
                 ' :wave: \n Great to see you here! \n\n WorkBot is an AI platform that centralizes knowledge management and enables automations across the organization. Slack integration for WorkBot makes it easier to answer your queries within Slack. \
-                \n • To ask from your WorkBot use ' +
-                `<@${process.env.BOT_USER_ID}> _[question]_` +
+                \n • To ask from your WorkBot use: ' +
+                `*@WorkBot* _[question]_` +
                 '\n • To link company `/workbot link`\
                 \n • To unlink company `/workbot unlink`\
                 \n • For help use `/workbot help`'
