@@ -27,7 +27,10 @@ export const connectWorkhubHandler = async ({
       const companies: Array<WorkHubCompany> = await adminClient.fetchUserCompanies(userEmail);
 
       if (companies.length < 1) {
-        await respond({ replace_original: false, text: 'No company found on your email!' });
+        await respond({
+          replace_original: false,
+          text: "You don't have an existing account on WorkHub. In order to use this app, you must have a WorkHub account, Please <https://www.workhub.ai/contact/|contact> our support team for more information or get yourself registered <https://app.workhub.ai/signup/workbot|here>."
+        });
       } else {
         try {
           await respond(companiesBlock(companies));
