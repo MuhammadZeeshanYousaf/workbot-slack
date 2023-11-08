@@ -6,23 +6,16 @@ app.command('/workbot', async args => {
   const {
     ack,
     say,
-    command: { text },
-    payload: { channel_id: channelId }
+    command: { text }
   } = args;
 
   await ack();
 
-  const queryMatch = text.match(/^\s*query\s(.*)/);
   const helpMatch = /^\s*help\s*/.test(text);
   const linkMatch = /^\s*link\s*/.test(text);
   const unlinkMatch = /^\s*unlink\s*/.test(text);
 
-  if (queryMatch) {
-    // Generate Query response from workbot
-    const query = queryMatch[1];
-
-    await queryHandler(args, query, channelId);
-  } else if (helpMatch) {
+  if (helpMatch) {
     await say({ blocks: HELP_MSG });
   } else if (linkMatch) {
     await linkCompanySlashHandler(args);

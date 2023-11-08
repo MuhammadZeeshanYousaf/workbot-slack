@@ -5,7 +5,7 @@ import { workbotClient } from '~/clients/workbot.client';
 import { PostQueryParams, STATUSCODE } from '~/globals';
 
 export const queryHandler = async (
-  args: (SlackEventMiddlewareArgs<'message'> | SlackCommandMiddlewareArgs) & AllMiddlewareArgs,
+  args: (SlackEventMiddlewareArgs<'app_mention'> | SlackEventMiddlewareArgs<'message'>) & AllMiddlewareArgs,
   userQuery: string,
   channelId: string
 ) => {

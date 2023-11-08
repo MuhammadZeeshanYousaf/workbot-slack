@@ -30,7 +30,8 @@ class Workbot extends BaseClient {
 
   async postQueryResponse(
     params: PostQueryParams,
-    args: (SlackEventMiddlewareArgs<'message'> | SlackCommandMiddlewareArgs) & AllMiddlewareArgs,
+    args: (SlackEventMiddlewareArgs<'app_mention'> | SlackEventMiddlewareArgs<'message'> | SlackCommandMiddlewareArgs) &
+      AllMiddlewareArgs,
     message: ChatPostMessageResponse,
     retryOnError = true
   ) {
@@ -52,39 +53,54 @@ class Workbot extends BaseClient {
       );
       const stream = response.data;
       const queryResponse: string[] = [];
-      if (response.status === STATUSCODE.BAD_REQUEST || response.status === STATUSCODE.NOT_FOUND)
-        return { status: response.status };
+      let maxThread = 0;
 
       stream.on('data', async (chunk: Buffer) => {
-        // Convert the buffer to a string and write to slack
         const dataString: string = chunk.toString('utf8');
+        console.info('Query Response meta data => Chunk length:', chunk.length, 'Data:', dataString);
         queryResponse.push(dataString);
+        ++maxThread;
+
+        if (maxThread < 10) {
+          return;
+        }
+        maxThread = 0;
 
         if (chunk.length > 0) {
           try {
-            await client.chat.update({
-              channel: message.channel!,
-              ts: message.ts!,
-              text: `${mrkdwn(queryResponse.join('')).text}`
-            });
+            client.chat
+              .update({
+                channel: message.channel!,
+                ts: message.ts!,
+                text: `${mrkdwn(queryResponse.join('')).text} `
+              })
+              .then(res => {
+                message = res;
+              });
+            return;
           } catch (e) {
             logger.error('Tier pause in message updating:', e.message);
           }
         }
-
-        console.info('Query Response meta data => Chunk length:', chunk.length, 'Data:', dataString);
       });
 
-      stream.on('end', async () => {
+      stream.on('end', () => {
         try {
-          await client.chat.update({
-            channel: message.channel!,
-            ts: message.ts!,
-            text: `${mrkdwn(queryResponse.join('')).text}`
-          });
+          client.chat
+            .update({
+              channel: message.channel!,
+              ts: message.ts!,
+              text: `${mrkdwn(queryResponse.join('')).text} `
+            })
+            .then(res => {
+              message = res;
+            });
+          return;
         } catch (e) {
           logger.error('Tier pause in message updating:', e.message);
         }
+        console.info('Query Response ended');
+        stream.destroy();
       });
 
       return { status: response.status };
