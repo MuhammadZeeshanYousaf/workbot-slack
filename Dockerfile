@@ -1,6 +1,9 @@
 # Use an official Node.js runtime as a parent image
 FROM node:18.17.0-alpine
 
+# Defines the app default environment
+ENV APP_ENV prod
+
 # apk = Package manager by Alpine Linux, a lightweight Linux distribution 
 # to install or upgrade the bash package.
 RUN apk add --no-cache --upgrade bash
