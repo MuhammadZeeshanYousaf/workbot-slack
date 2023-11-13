@@ -1,0 +1,76 @@
+name: Deploy
+
+run-name: '${{ github.event.inputs.environment }}: deployment of (${{ github.ref }})'
+
+on: 
+  workflow_dispatch:
+    inputs:
+      # fetches all environments created in the github repository
+      environment:
+        type: environment
+        description: 'Deployment Environment'
+        required: true
+env:
+  # Setting an environment variable with the value of a configuration variable
+  docker_path: ${{ vars.DOCKER_FILE_PATH }}
+  docker_build_context: ${{ vars.DOCKER_BUILD_CONTEXT }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    # Select the environment that the user has opted to run deployment for
+    # All environment variables referenced below using `vars.` will automatically be fetched from the selected environment
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+    - name: Check out repository source code
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCESS_KEY_ID || secrets.PROD_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_SECRET_ACCESS_KEY || secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+
+    - name: Create .env File
+      run: |
+          # Loop through all the gitHub environment variables and add them into a .env file
+          echo '${{ toJSON(vars) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> .env
+  
+    - name: Show .env File
+      run: |
+            cat .env
+            
+    #- name: Uploading .env to S3 secrets bucket
+      #run: | 
+          #aws s3 cp ${{ github.workspace }}/.env s3://${{ github.event.inputs.environment == 'staging' && secrets.STAGE_SECRET_BUCKET || secrets.PROD_SECRET_BUCKET }}/${{ vars.BUCKET_ENV_FILENAME }}
+
+    #- name: Build and push Docker image
+      #run: |
+          #repo_name="${{ github.repository }}"
+          #repo_name="${repo_name#*/}"  # Remove everything before the first slash, because we need to remove the organization name
+          
+          # Log in to an AWS ECR Registry
+          #aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com
+          
+          # Check if DOCKER_FILE_PATH environment variable is set, then use that otherwise use the default value provided
+          #docker_file="./deploy/Dockerfile"
+          #[[ ! -z "${{ env.docker_path }}" ]] && docker_file="${{ env.docker_path }}"
+          
+          # Check if DOCKER_BUILD_CONTEXT environment variable is set, then use that otherwise use the default value provided
+          #build_context="."
+          #[[ ! -z "${{ env.docker_build_context }}" ]] && build_context="${{ env.docker_build_context }}"
+
+          # Build your docker image
+          #docker build -t $repo_name -f $docker_file $build_context
+          
+          # After the build completes, tag your image so you can push the image to this ECR repository
+          #docker tag $repo_name:latest ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/${{ vars.ECR_REPOSITORY }}:latest
+          
+          # Push this tagged image to your ECR repository
+          #docker push ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/${{ vars.ECR_REPOSITORY }}:latest
+
+    #- name: Update ECS service
+      #run: |
+          #aws ecs update-service --cluster ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ECS_CLUSTER || secrets.PROD_AWS_ECS_CLUSTER }} --service wh-workbot-scheduling-web-service --force-new-deployment
