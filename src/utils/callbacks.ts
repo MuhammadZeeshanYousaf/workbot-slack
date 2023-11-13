@@ -13,7 +13,6 @@ export class SlackCallbacks implements CallbackOptions {
   ): void {
     let redirectUrl: string;
     let browserUrl: string;
-    const logoUrl = 'https://getbravo-ic.s3.eu-central-1.amazonaws.com/prod/document/company_5fTZmON9DmSH1mMagjhhIQ';
 
     if (installation.appId !== undefined && installation.team !== undefined) {
       // redirect back to Slack native app
@@ -27,7 +26,7 @@ export class SlackCallbacks implements CallbackOptions {
       browserUrl = redirectUrl;
     }
 
-    const htmlResponse = thankyoupage({ redirectUrl: redirectUrl, browserUrl: browserUrl, logoUrl: logoUrl });
+    const htmlResponse = thankyoupage({ redirectUrl: redirectUrl, browserUrl: browserUrl });
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(htmlResponse);
   }

@@ -57,7 +57,6 @@ class Workbot extends BaseClient {
 
       stream.on('data', async (chunk: Buffer) => {
         const dataString: string = chunk.toString('utf8');
-        console.info('Query Response meta data => Chunk length:', chunk.length, 'Data:', dataString);
         queryResponse.push(dataString);
         ++maxThread;
 
@@ -99,7 +98,6 @@ class Workbot extends BaseClient {
         } catch (e) {
           logger.error('Tier pause in message updating:', e.message);
         }
-        console.info('Query Response ended');
         stream.destroy();
       });
 

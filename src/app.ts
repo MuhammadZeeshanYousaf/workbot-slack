@@ -2,6 +2,7 @@ import { App, LogLevel } from '@slack/bolt';
 import { DbInstallationStore } from '~/store';
 import { Database } from '~/database';
 import { SlackCallbacks } from './utils/callbacks';
+import { routes } from '~/routes';
 
 export const database = new Database();
 
@@ -16,7 +17,8 @@ export const app = new App({
     directInstall: true,
     callbackOptions: new SlackCallbacks()
   },
-  installationStore: new DbInstallationStore()
+  installationStore: new DbInstallationStore(),
+  customRoutes: routes
 });
 
 // Pass to next middleware

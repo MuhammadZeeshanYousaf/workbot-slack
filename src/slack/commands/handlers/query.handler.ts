@@ -3,6 +3,7 @@ import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { workbotClient } from '~/clients/workbot.client';
 import { PostQueryParams, STATUSCODE } from '~/globals';
+import { unlinkCompanyBlock } from '~/slack/blocks';
 
 export const queryHandler = async (
   args: (SlackEventMiddlewareArgs<'app_mention'> | SlackEventMiddlewareArgs<'message'>) & AllMiddlewareArgs,
@@ -54,7 +55,7 @@ export const queryHandler = async (
 
       await workbotClient.postQueryResponse(params, args, message);
     } else {
-      await say(`No linked WorkHub Company found!`);
+      await say(unlinkCompanyBlock('No linked WorkHub Company found!'));
     }
   } else {
     logger.error('Invalid Request!');

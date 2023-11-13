@@ -12,10 +12,10 @@ app.message(async args => {
   } = args;
 
   if ((message.subtype === undefined || message.subtype === 'bot_message') && message.text !== undefined) {
-    if (message.text.includes(`${process.env.BOT_USER_ID}`)) {
-      await say("Don't need to mention, you can ask directly in here.");
-    } else {
-      await queryHandler(args, message.text, channelId);
-    }
+    let query = message.text;
+
+    if (query.includes('<@')) query = query.split('>')[1];
+
+    await queryHandler(args, query, channelId);
   }
 });
