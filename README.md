@@ -4,13 +4,13 @@
 
 App: APP URL goes here
 
-Deployment: Deployment pipeline link goes here
+Deployment: Use GitHub Actions
 
 ## Staging:
 
-App: APP URL goes here
+App: <https://workbot-slack.stage-workhub.de/>
 
-Deployment: Deployment pipeline link goes here
+Deployment: Use GitHub Actions
 
 ## Docker Environment Initialization
 
