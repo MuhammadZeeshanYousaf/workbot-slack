@@ -35,9 +35,6 @@ jobs:
 
     - name: Create .env File
       run: |
-          # Loop through all the gitHub environment variables and add them into a .env file
-          #echo '${{ toJSON(secrets) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> .env
-
           # Loop through all the GitHub secret variables starting with "SECRET_" and add them into a .env file
           echo '${{ toJSON(secrets) }}' | jq -r 'to_entries | map(select(.key | startswith("SECRET_"))) | map("\(.key)=\(.value)") | .[]' >> .env
   
