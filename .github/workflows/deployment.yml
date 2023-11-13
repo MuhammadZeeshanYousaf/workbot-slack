@@ -70,6 +70,20 @@ jobs:
           # Push this tagged image to your ECR repository
           docker push ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/${{ vars.ECR_REPOSITORY }}:latest
 
+    - name: Remove untagged ECR Images
+      run: |
+            IMAGES_TO_DELETE=$(aws ecr list-images --repository-name ${{ vars.ECR_REPOSITORY }} --filter "tagStatus=UNTAGGED" --query 'imageIds[*]')
+
+            NO_OF_IMAGES_TO_DELETE=$(aws ecr list-images --repository-name ${{ vars.ECR_REPOSITORY }} --filter "tagStatus=UNTAGGED" --query 'imageIds[*]' --output json | jq '. | length')
+            
+            if [ $NO_OF_IMAGES_TO_DELETE -eq 0 ];
+            then
+                echo "No images to delete"
+            else
+                echo "Deleting 'untagged' images"
+                aws ecr batch-delete-image --repository-name ${{ vars.ECR_REPOSITORY }} --image-ids "$IMAGES_TO_DELETE"
+            fi
+
     - name: Update ECS service
       run: |
           aws ecs update-service --cluster ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ECS_CLUSTER || secrets.PROD_AWS_ECS_CLUSTER }} --service wh-workbot-slack-web-service --force-new-deployment
