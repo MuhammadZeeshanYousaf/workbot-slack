@@ -35,42 +35,41 @@ jobs:
 
     - name: Create .env File
       run: |
-          # Fetch and loop through all the GitHub secret variables, however extract from them only those, starting with prefix "WHB_" and add them into a .env file but without that prefix
+          # Fetch and loop through all the GitHub secret variables, however only extract those
+          # starting with prefix "WHB_" and add them into a .env file but without that prefix.
+          # This has been done because we also have some other secrets defined at the organization level which we do not want 
+          # to add in our .env, so thats why we added prefix, so only our app specific secrets are added in the .env
           echo '${{ toJSON(secrets) }}' | jq -r 'to_entries | map(select(.key | startswith("WHB_"))) | map("\(.key | ltrimstr("WHB_"))=\(.value)") | .[]' >> .env
-  
-    - name: Show .env File
-      run: |
-            cat .env
-            
-    #- name: Uploading .env to S3 secrets bucket
-      #run: | 
-          #aws s3 cp ${{ github.workspace }}/.env s3://${{ github.event.inputs.environment == 'staging' && secrets.STAGE_SECRET_BUCKET || secrets.PROD_SECRET_BUCKET }}/${{ vars.BUCKET_ENV_FILENAME }}
+              
+    - name: Uploading .env to S3 secrets bucket
+      run: | 
+          aws s3 cp ${{ github.workspace }}/.env s3://${{ github.event.inputs.environment == 'staging' && secrets.STAGE_SECRET_BUCKET || secrets.PROD_SECRET_BUCKET }}/${{ vars.BUCKET_ENV_FILENAME }}
 
-    #- name: Build and push Docker image
-      #run: |
-          #repo_name="${{ github.repository }}"
-          #repo_name="${repo_name#*/}"  # Remove everything before the first slash, because we need to remove the organization name
+    - name: Build and push Docker image
+      run: |
+          repo_name="${{ github.repository }}"
+          repo_name="${repo_name#*/}"  # Remove everything before the first slash, because we need to remove the organization name
           
           # Log in to an AWS ECR Registry
-          #aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com
+          aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com
           
           # Check if DOCKER_FILE_PATH environment variable is set, then use that otherwise use the default value provided
-          #docker_file="./deploy/Dockerfile"
-          #[[ ! -z "${{ env.docker_path }}" ]] && docker_file="${{ env.docker_path }}"
+          docker_file="./deploy/Dockerfile"
+          [[ ! -z "${{ env.docker_path }}" ]] && docker_file="${{ env.docker_path }}"
           
           # Check if DOCKER_BUILD_CONTEXT environment variable is set, then use that otherwise use the default value provided
-          #build_context="."
-          #[[ ! -z "${{ env.docker_build_context }}" ]] && build_context="${{ env.docker_build_context }}"
+          build_context="."
+          [[ ! -z "${{ env.docker_build_context }}" ]] && build_context="${{ env.docker_build_context }}"
 
           # Build your docker image
-          #docker build -t $repo_name -f $docker_file $build_context
+          docker build -t $repo_name -f $docker_file $build_context
           
-          # After the build completes, tag your image so you can push the image to this ECR repository
-          #docker tag $repo_name:latest ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/${{ vars.ECR_REPOSITORY }}:latest
+          # After the build completes, tag your image so later you can push the image to the ECR repository
+          docker tag $repo_name:latest ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/${{ vars.ECR_REPOSITORY }}:latest
           
           # Push this tagged image to your ECR repository
-          #docker push ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/${{ vars.ECR_REPOSITORY }}:latest
+          docker push ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/${{ vars.ECR_REPOSITORY }}:latest
 
-    #- name: Update ECS service
-      #run: |
-          #aws ecs update-service --cluster ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ECS_CLUSTER || secrets.PROD_AWS_ECS_CLUSTER }} --service wh-workbot-scheduling-web-service --force-new-deployment
+    - name: Update ECS service
+      run: |
+          aws ecs update-service --cluster ${{ github.event.inputs.environment == 'staging' && secrets.STAGE_AWS_ECS_CLUSTER || secrets.PROD_AWS_ECS_CLUSTER }} --service wh-workbot-slack-web-service --force-new-deployment
