@@ -36,8 +36,12 @@ class AdminClient extends AdminBaseClient {
     const token = cacheUser?.userToken;
 
     if (token === null || token === undefined || token.length === 0) {
-      this.workhubUser = await this.getUserWithEmail(email);
-      await this.setUserCache(email);
+      try {
+        this.workhubUser = await this.getUserWithEmail(email);
+        await this.setUserCache(email);
+      } catch (e) {
+        return this.workhubUser;
+      }
     } else {
       return cacheUser as WorkhubUser;
     }

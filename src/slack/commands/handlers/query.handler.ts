@@ -2,12 +2,13 @@ import { AllMiddlewareArgs, SlackCommandMiddlewareArgs, SlackEventMiddlewareArgs
 import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { workbotClient } from '~/clients/workbot.client';
-import { PostQueryParams, STATUSCODE } from '~/globals';
+import { ErrorMessages, PostQueryParams, STATUSCODE } from '~/globals';
 import { unlinkCompanyBlock } from '~/slack/blocks';
 
 export const queryHandler = async (
   args: (SlackEventMiddlewareArgs<'app_mention'> | SlackEventMiddlewareArgs<'message'>) & AllMiddlewareArgs,
   userQuery: string,
+  userEmail: string,
   channelId: string
 ) => {
   const {
@@ -18,14 +19,14 @@ export const queryHandler = async (
 
   if (teamId !== undefined) {
     const data = await database.get(teamId);
-    const { linkedBy, linkedCompanyUuid } = data;
+    const { linkedCompanyUuid } = data;
     let channelConversations = data.channelConversations;
     if (!channelConversations) channelConversations = {};
     let conversationUuid = channelConversations?.[channelId];
 
     if (linkedCompanyUuid !== undefined && linkedCompanyUuid !== null && linkedCompanyUuid !== '') {
       const message = await say(`Please wait....`);
-      const { userToken } = await adminClient.fetchUserData(linkedBy!);
+      const { userToken } = await adminClient.fetchUserData(userEmail);
 
       if (conversationUuid === undefined || conversationUuid === null) {
         let conversationResponse = await workbotClient.createConversation(
@@ -44,16 +45,20 @@ export const queryHandler = async (
         }
       }
 
-      const params: PostQueryParams = {
-        userQuery: userQuery,
-        userToken: userToken,
-        companyUuid: linkedCompanyUuid,
-        conversationUuid: conversationUuid,
-        channelConversations: channelConversations,
-        channelId: channelId
-      };
+      if (userToken !== undefined && userToken !== '' && userToken !== null) {
+        const params: PostQueryParams = {
+          userQuery: userQuery,
+          userToken: userToken,
+          companyUuid: linkedCompanyUuid,
+          conversationUuid: conversationUuid,
+          channelConversations: channelConversations,
+          channelId: channelId
+        };
 
-      await workbotClient.postQueryResponse(params, args, message);
+        await workbotClient.postQueryResponse(params, args, message);
+      } else {
+        return await say(ErrorMessages.NoWorkhubAccount);
+      }
     } else {
       await say(unlinkCompanyBlock('No linked WorkHub Company found!'));
     }
