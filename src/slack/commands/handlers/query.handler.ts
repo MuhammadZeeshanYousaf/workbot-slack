@@ -24,7 +24,12 @@ export const queryHandler = async (
     if (!channelConversations) channelConversations = {};
     let conversationUuid = channelConversations?.[channelId];
 
-    if (linkedCompanyUuid !== undefined && linkedCompanyUuid !== null && linkedCompanyUuid !== '') {
+    if (
+      linkedCompanyUuid !== undefined &&
+      linkedCompanyUuid !== null &&
+      linkedCompanyUuid !== '' &&
+      linkedCompanyUuid !== 'null'
+    ) {
       const message = await say(`Please wait....`);
       const { userToken } = await adminClient.fetchUserData(userEmail);
 
