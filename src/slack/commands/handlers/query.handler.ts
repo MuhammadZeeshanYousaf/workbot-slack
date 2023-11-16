@@ -22,7 +22,8 @@ export const queryHandler = async (
     const { linkedCompanyUuid } = data;
     let channelConversations = data.channelConversations;
     if (!channelConversations) channelConversations = {};
-    let conversationUuid = channelConversations?.[channelId];
+    let conversationUuid = channelConversations?.[channelId][0];
+    const conversationOwnerEmail = channelConversations?.[channelId][1];
 
     if (
       linkedCompanyUuid !== undefined &&
@@ -31,19 +32,23 @@ export const queryHandler = async (
       linkedCompanyUuid !== 'null'
     ) {
       const message = await say(`Please wait....`);
-      const { userToken } = await adminClient.fetchUserData(userEmail);
+      const { userToken, uuid } = await adminClient.fetchUserData(userEmail);
 
-      if (conversationUuid === undefined || conversationUuid === null) {
-        let conversationResponse = await workbotClient.createConversation(
-          {
-            userToken: userToken,
-            companyUuid: linkedCompanyUuid
-          },
-          logger
-        );
+      if (
+        conversationUuid === undefined ||
+        conversationUuid === null ||
+        conversationOwnerEmail === undefined ||
+        conversationOwnerEmail === null
+      ) {
+        let conversationResponse = await workbotClient.createConversation({
+          userToken: userToken,
+          companyUuid: linkedCompanyUuid
+        });
 
         if (conversationResponse.status === STATUSCODE.CREATED) {
-          conversationUuid = channelConversations[channelId] = conversationResponse.uuid;
+          conversationUuid = conversationResponse.uuid;
+          channelConversations[channelId] = [conversationUuid, userEmail];
+
           await database.update(teamId, 'channelConversations', channelConversations);
         } else {
           return await say('Error in creating your conversation!');
@@ -54,6 +59,9 @@ export const queryHandler = async (
         const params: PostQueryParams = {
           userQuery: userQuery,
           userToken: userToken,
+          userUuid: uuid,
+          userEmail: userEmail,
+          ownerEmail: conversationOwnerEmail,
           companyUuid: linkedCompanyUuid,
           conversationUuid: conversationUuid,
           channelConversations: channelConversations,

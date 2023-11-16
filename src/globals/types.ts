@@ -1,7 +1,7 @@
 export type WorkhubUser = {
   email?: string;
   fullName?: string;
-  uuid?: string;
+  uuid: string;
   userToken: string;
 };
 
@@ -13,6 +13,9 @@ export type WorkHubCompany = {
 export type PostQueryParams = {
   userQuery: string;
   userToken: string;
+  userUuid: string;
+  userEmail: string;
+  ownerEmail: string;
   companyUuid: string;
   conversationUuid: string;
   channelConversations: object;

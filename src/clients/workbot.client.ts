@@ -4,13 +4,14 @@ import { AllMiddlewareArgs, Logger, SlackCommandMiddlewareArgs, SlackEventMiddle
 import { PostQueryParams, STATUSCODE } from '~/globals';
 import { database } from '~/app';
 import mrkdwn from 'html-to-mrkdwn';
+import { adminClient } from './admin.client';
 
 class Workbot extends BaseClient {
   constructor() {
     super(process.env.WORKBOT_API_URL!);
   }
 
-  async createConversation({ userToken, companyUuid }, logger?: Logger) {
+  async createConversation({ userToken, companyUuid }) {
     try {
       const {
         status,
@@ -23,8 +24,21 @@ class Workbot extends BaseClient {
 
       return { uuid: uuid, status: status };
     } catch (e) {
-      logger?.error(e);
-      return { status: e.status };
+      return { status: e.response.status };
+    }
+  }
+
+  async addConversationMember({ ownerToken, conversationUuid, memberUuid }) {
+    try {
+      const { status } = await this.axios.post(
+        `conversations/${conversationUuid}/users`,
+        { conversation_users: [memberUuid] },
+        { headers: { Authorization: `Bearer ${ownerToken}` } }
+      );
+
+      return { status: status };
+    } catch (e) {
+      return { status: e.response.status };
     }
   }
 
@@ -35,7 +49,17 @@ class Workbot extends BaseClient {
     message: ChatPostMessageResponse,
     retryOnError = true
   ) {
-    let { userQuery, userToken, companyUuid, conversationUuid, channelConversations, channelId } = params;
+    let {
+      userQuery,
+      userToken,
+      userUuid,
+      userEmail,
+      ownerEmail,
+      companyUuid,
+      conversationUuid,
+      channelConversations,
+      channelId
+    } = params;
     const {
       client,
       context: { teamId: teamId },
@@ -104,24 +128,37 @@ class Workbot extends BaseClient {
       return { status: response.status };
     } catch (error) {
       if (retryOnError) {
-        let conversationRes = await workbotClient.createConversation(
-          {
+        if (error.response.status == STATUSCODE.NOT_FOUND) {
+          // conversation was deleted by another source, create new one
+          let conversationRes = await workbotClient.createConversation({
             userToken: userToken,
             companyUuid: companyUuid
-          },
-          logger
-        );
+          });
 
-        if (conversationRes?.status === STATUSCODE.CREATED) {
-          if (!channelConversations) channelConversations = {};
-          channelConversations[channelId] = conversationRes.uuid;
-          await database.update(teamId!, 'channelConversations', channelConversations);
-          this.postQueryResponse(
-            { ...params, conversationUuid: conversationRes.uuid, channelConversations: channelConversations },
-            args,
-            message,
-            false
-          );
+          if (conversationRes?.status === STATUSCODE.CREATED) {
+            if (!channelConversations) channelConversations = {};
+            conversationUuid = conversationRes.uuid;
+            channelConversations[channelId] = [conversationUuid, userEmail];
+            await database.update(teamId!, 'channelConversations', channelConversations);
+            this.postQueryResponse(
+              { ...params, conversationUuid: conversationUuid, channelConversations: channelConversations },
+              args,
+              message,
+              false
+            );
+          }
+        } else if (error.response.status === STATUSCODE.UNAUTHORIZED) {
+          // add the user as member of this conversation
+          const ownerData = await adminClient.fetchUserData(ownerEmail);
+          const { status } = await this.addConversationMember({
+            ownerToken: ownerData.userToken,
+            conversationUuid: conversationUuid,
+            memberUuid: userUuid
+          });
+
+          if (status === STATUSCODE.CREATED) {
+            this.postQueryResponse(params, args, message, false);
+          }
         }
       } else {
         logger?.error(error);
