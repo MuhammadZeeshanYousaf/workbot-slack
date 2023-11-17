@@ -2,7 +2,7 @@ import { AllMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
 import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { workbotClient } from '~/clients/workbot.client';
-import { ChannelConversation, ErrorMessages, PostQueryParams, STATUSCODE } from '~/globals';
+import { ChannelConversation, Messages, PostQueryParams, STATUSCODE } from '~/globals';
 import { unlinkCompanyBlock } from '~/slack/blocks';
 
 export const queryHandler = async (
@@ -32,7 +32,7 @@ export const queryHandler = async (
       linkedCompanyUuid != ''
     ) {
       // company is linked
-      const message = await say(`Please wait....`);
+      const message = await say(Messages.Wait);
       const { userToken, uuid } = await adminClient.fetchUserData(userEmail);
 
       if (
@@ -46,7 +46,7 @@ export const queryHandler = async (
         uuid == ''
       ) {
         // not a workhub user
-        return await say(ErrorMessages.NoWorkhubAccount);
+        return await say(Messages.NoWorkhubAccount);
       }
 
       // an authorized workhub user
@@ -72,7 +72,7 @@ export const queryHandler = async (
 
           await database.updateConversations(teamId, channelId, newConversation, channelConversations);
         } else {
-          return await say('_Failed to establish your conversation with WorkBot!_');
+          return await say(Messages.FailedToCreateConversation);
         }
       }
 
@@ -96,9 +96,7 @@ export const queryHandler = async (
 
         if (+addConversationRes.status !== STATUSCODE.CREATED) {
           // user was not added to conversation
-          return await say(
-            '_Failed to add you to this conversation. Either you are not a part of linked WorkHub company or you do not have exisiting WorkHub account._'
-          );
+          return await say(Messages.FailedToAddMember);
         }
       }
 
@@ -117,7 +115,7 @@ export const queryHandler = async (
       await workbotClient.postQueryResponse(params, args, message);
     } else {
       // company was not linked
-      await say(unlinkCompanyBlock('No linked WorkHub Company found!'));
+      await say(unlinkCompanyBlock(Messages.NoLinkedCompany));
     }
   } else {
     logger.error('Invalid Request!');

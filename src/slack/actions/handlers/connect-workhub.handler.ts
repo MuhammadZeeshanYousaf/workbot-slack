@@ -1,6 +1,6 @@
 import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
-import { ErrorMessages, WorkHubCompany } from '~/globals';
+import { Messages, WorkHubCompany } from '~/globals';
 import { AllMiddlewareArgs, SlackActionMiddlewareArgs, SlackCommandMiddlewareArgs } from '@slack/bolt';
 import { companiesBlock } from '~/slack/blocks';
 
@@ -16,7 +16,7 @@ export const connectWorkhubHandler = async ({
     if (linkedCompanyUuid === null) {
       await respond({
         replace_original: false,
-        text: 'Please wait, while we are checking your account...'
+        text: Messages.CheckingAccount
       });
 
       const { user } = await users.info({
@@ -29,7 +29,7 @@ export const connectWorkhubHandler = async ({
       if (companies.length < 1) {
         await respond({
           replace_original: false,
-          text: ErrorMessages.NoWorkhubAccount
+          text: Messages.NoWorkhubAccount
         });
       } else {
         try {
@@ -41,7 +41,7 @@ export const connectWorkhubHandler = async ({
         }
       }
     } else {
-      await respond({ replace_original: false, text: 'You have already linked your WorkHub company.' });
+      await respond({ replace_original: false, text: Messages.CompanyAlreadyLinked });
     }
   } else {
     logger.error('Invalid Request!');

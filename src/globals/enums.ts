@@ -17,9 +17,19 @@ export enum SlackActions {
   LinkCompanyText = 'Link Company',
   LinkCompanyId = 'link_company',
   UnlinkCompanyText = 'Unlink Company',
-  UnlinkCompanyId = 'unlink_company'
+  UnlinkCompanyId = 'unlink_company',
+  LinkAgain = 'Link Again'
 }
 
-export enum ErrorMessages {
-  NoWorkhubAccount = "You don't have an existing account on WorkHub. In order to use this app, you must have a WorkHub account, Please <https://www.workhub.ai/contact/|contact> our support team for more information or get yourself registered <https://app.workhub.ai/signup/workbot|here>."
+export enum Messages {
+  Wait = 'Please wait....',
+  CheckingAccount = '_Please wait, while we are checking your account..._',
+  NoLinkedCompany = '_No linked WorkHub Company found!_',
+  NoCompanyLinkedYet = '_You have not linked your WorkHub company yet!_',
+  CompanyUnlinked = '_You have unlinked your WorkHub Company successfully._',
+  CompanyAlreadyLinked = '_You have already linked your WorkHub Company._',
+  CompanyLinked = '_You have successfully linked_',
+  FailedToCreateConversation = '_Failed to establish your conversation with WorkBot!_',
+  FailedToAddMember = '_Failed to add you to this conversation. Either you are not a part of linked WorkHub company or you do not have exisiting WorkHub account._',
+  NoWorkhubAccount = "_You don't have an existing account on WorkHub. In order to use this app, you must have a WorkHub account, Please <https://www.workhub.ai/contact/|contact> our support team for more information or get yourself registered <https://app.workhub.ai/signup/workbot|here>._"
 }

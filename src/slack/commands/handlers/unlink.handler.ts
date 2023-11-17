@@ -1,5 +1,6 @@
 import { AllMiddlewareArgs, SlackCommandMiddlewareArgs } from '@slack/bolt';
 import { database } from '~/app';
+import { Messages, SlackActions } from '~/globals';
 import { unlinkCompanyBlock } from '~/slack/blocks';
 
 export const unlinkCompanySlashHandler = async ({
@@ -11,11 +12,11 @@ export const unlinkCompanySlashHandler = async ({
     const { linkedCompanyUuid } = await database.get(teamId);
 
     if (linkedCompanyUuid === null) {
-      await respond(unlinkCompanyBlock('You have not linked your WorkHub company yet!'));
+      await respond(unlinkCompanyBlock(Messages.NoCompanyLinkedYet));
     } else {
       await database.update(teamId, 'linkedCompanyUuid', null);
 
-      await respond(unlinkCompanyBlock('You have unlinked your WorkHub company successfully.', 'Link Again'));
+      await respond(unlinkCompanyBlock(Messages.CompanyUnlinked, SlackActions.LinkAgain));
     }
   } else {
     logger.error('teamId does not exist');

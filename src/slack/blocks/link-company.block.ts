@@ -1,4 +1,5 @@
 import { RespondArguments } from '@slack/bolt';
+import { Messages } from '~/globals';
 
 export const linkCompanyBlock = (companyName): RespondArguments => {
   return {
@@ -7,7 +8,7 @@ export const linkCompanyBlock = (companyName): RespondArguments => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `You have successfully linked *${companyName}*.`
+          text: Messages.CompanyLinked + ` *${companyName}*.`
         }
       }
     ]
