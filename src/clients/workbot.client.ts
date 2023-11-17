@@ -24,7 +24,7 @@ class Workbot extends BaseClient {
 
       return { uuid: uuid, status: status };
     } catch (e) {
-      return { status: e.response.status };
+      return { uuid: null, status: e?.response?.status };
     }
   }
 
@@ -38,7 +38,7 @@ class Workbot extends BaseClient {
 
       return { status: status };
     } catch (e) {
-      return { status: e.response.status };
+      return { status: e?.response?.status };
     }
   }
 
@@ -95,7 +95,7 @@ class Workbot extends BaseClient {
               .update({
                 channel: message.channel!,
                 ts: message.ts!,
-                text: `${mrkdwn(queryResponse.join('')).text} `
+                text: `${mrkdwn(queryResponse.join('')).text}_`
               })
               .then(res => {
                 message = res;
@@ -113,7 +113,7 @@ class Workbot extends BaseClient {
             .update({
               channel: message.channel!,
               ts: message.ts!,
-              text: `${mrkdwn(queryResponse.join('')).text} `
+              text: `${mrkdwn(queryResponse.join('')).text}`
             })
             .then(res => {
               message = res;
@@ -128,14 +128,15 @@ class Workbot extends BaseClient {
       return { status: response.status };
     } catch (error) {
       if (retryOnError) {
-        if (error.response.status == STATUSCODE.NOT_FOUND) {
+
+        if (this.hasStatus(error, STATUSCODE.NOT_FOUND)) {
           // conversation was deleted by another source, create new one
-          let conversationRes = await workbotClient.createConversation({
+          let conversationRes = await this.createConversation({
             userToken: userToken,
             companyUuid: companyUuid
           });
 
-          if (conversationRes?.status === STATUSCODE.CREATED) {
+          if (+conversationRes.status == STATUSCODE.CREATED) {
             if (!channelConversations) channelConversations = {};
             conversationUuid = conversationRes.uuid;
             const newConversation: ChannelConversation = { conversationUuid: conversationUuid, ownerEmail: userEmail };
@@ -148,16 +149,16 @@ class Workbot extends BaseClient {
               false
             );
           }
-        } else if (error.response.status === STATUSCODE.UNAUTHORIZED) {
+        } else if (this.hasStatus(error, STATUSCODE.UNAUTHORIZED)) {
           // add the user as member of this conversation
           const ownerData = await adminClient.fetchUserData(ownerEmail);
-          const { status } = await this.addConversationMember({
+          const addConvRes = await this.addConversationMember({
             ownerToken: ownerData.userToken,
             conversationUuid: conversationUuid,
             memberUuid: userUuid
           });
 
-          if (status === STATUSCODE.CREATED) {
+          if (+addConvRes.status == STATUSCODE.CREATED) {
             this.postQueryResponse(params, args, message, false);
           }
         }
