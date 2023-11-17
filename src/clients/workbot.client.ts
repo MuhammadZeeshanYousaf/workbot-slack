@@ -17,7 +17,7 @@ class Workbot extends BaseClient {
         status,
         data: { uuid }
       } = await this.axios.post(
-        `companies/${companyUuid}/conversations`,
+        `/companies/${companyUuid}/conversations`,
         { name: 'New Slack Chat' },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
@@ -31,7 +31,7 @@ class Workbot extends BaseClient {
   async addConversationMember({ ownerToken, conversationUuid, memberUuid }) {
     try {
       const { status } = await this.axios.post(
-        `conversations/${conversationUuid}/users`,
+        `/conversations/${conversationUuid}/users`,
         { conversation_users: [memberUuid] },
         { headers: { Authorization: `Bearer ${ownerToken}` } }
       );

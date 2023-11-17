@@ -1,13 +1,20 @@
 import { DbClient } from '~/database/config';
 import { WorkbotSchema } from '~/database/schema';
-import { PutCommand, GetCommand, DeleteCommand, UpdateCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import {
+  PutCommand,
+  GetCommand,
+  DeleteCommand,
+  UpdateCommand,
+  ScanCommand,
+  DynamoDBDocumentClient
+} from '@aws-sdk/lib-dynamodb';
 
 export class Database {
-  private Client = DbClient;
+  private DocClient!: DynamoDBDocumentClient;
   private TableName!: string;
 
   constructor() {
-    this.Client = DbClient;
+    this.DocClient = DynamoDBDocumentClient.from(DbClient);
     this.TableName = process.env.AWS_DYNAMODB_TABLE!;
   }
 
@@ -18,7 +25,7 @@ export class Database {
         Item: data
       });
 
-      return await this.Client.send(command);
+      return await this.DocClient.send(command);
     } catch (e) {
       console.error(e);
     }
@@ -35,7 +42,7 @@ export class Database {
         }
       });
 
-      const data = await this.Client.send(command);
+      const data = await this.DocClient.send(command);
 
       return data.Item as WorkbotSchema;
     } catch (e) {
@@ -54,7 +61,7 @@ export class Database {
         }
       });
 
-      return await this.Client.send(command);
+      return await this.DocClient.send(command);
     } catch (e) {
       console.error(e);
     }
@@ -76,7 +83,8 @@ export class Database {
         ReturnValues: 'ALL_NEW'
       });
 
-      return await this.Client.send(command);
+      const updated = await this.DocClient.send(command);
+      return updated.Attributes;
     } catch (e) {
       console.error(e);
     }
@@ -94,7 +102,7 @@ export class Database {
         }
       });
 
-      const data = await this.Client.send(command);
+      const data = await this.DocClient.send(command);
 
       return data.Items as WorkbotSchema[];
     } catch (e) {

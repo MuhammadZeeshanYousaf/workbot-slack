@@ -1,4 +1,4 @@
-import { AllMiddlewareArgs, SlackCommandMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
+import { AllMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
 import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { workbotClient } from '~/clients/workbot.client';

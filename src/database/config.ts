@@ -1,5 +1,4 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
 // Configure AWS credentials
 const AwsCredentials = {
@@ -8,4 +7,4 @@ const AwsCredentials = {
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 };
 
-export const DbClient = DynamoDBDocumentClient.from(new DynamoDBClient(AwsCredentials));
+export const DbClient = new DynamoDBClient(AwsCredentials);

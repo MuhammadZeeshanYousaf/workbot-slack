@@ -1,6 +1,6 @@
 import { app } from '~/app';
 import { HELP_MSG, MENTION_MSG } from '~/slack/blocks';
-import { linkCompanySlashHandler, queryHandler, unlinkCompanySlashHandler } from './handlers';
+import { linkCompanySlashHandler, unlinkCompanySlashHandler } from './handlers';
 
 app.command('/workbot', async args => {
   const {
