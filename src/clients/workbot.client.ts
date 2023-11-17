@@ -1,7 +1,7 @@
 import { ChatPostMessageResponse } from '@slack/web-api';
 import { BaseClient } from './base.client';
-import { AllMiddlewareArgs, Logger, SlackCommandMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
-import { PostQueryParams, STATUSCODE } from '~/globals';
+import { AllMiddlewareArgs, SlackCommandMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
+import { ChannelConversation, PostQueryParams, STATUSCODE } from '~/globals';
 import { database } from '~/app';
 import mrkdwn from 'html-to-mrkdwn';
 import { adminClient } from './admin.client';
@@ -138,8 +138,9 @@ class Workbot extends BaseClient {
           if (conversationRes?.status === STATUSCODE.CREATED) {
             if (!channelConversations) channelConversations = {};
             conversationUuid = conversationRes.uuid;
-            channelConversations[channelId] = [conversationUuid, userEmail];
-            await database.update(teamId!, 'channelConversations', channelConversations);
+            const newConversation: ChannelConversation = { conversationUuid: conversationUuid, ownerEmail: userEmail };
+            await database.updateConversations(teamId!, channelId, newConversation, channelConversations);
+
             this.postQueryResponse(
               { ...params, conversationUuid: conversationUuid, channelConversations: channelConversations },
               args,

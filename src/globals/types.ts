@@ -21,3 +21,8 @@ export type PostQueryParams = {
   channelConversations: object;
   channelId: string;
 };
+
+export type ChannelConversation = {
+  conversationUuid: string;
+  ownerEmail: string;
+};

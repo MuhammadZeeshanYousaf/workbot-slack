@@ -8,6 +8,7 @@ import {
   ScanCommand,
   DynamoDBDocumentClient
 } from '@aws-sdk/lib-dynamodb';
+import { ChannelConversation } from '~/globals';
 
 export class Database {
   private DocClient!: DynamoDBDocumentClient;
@@ -90,6 +91,21 @@ export class Database {
     }
 
     throw new Error('Error in updating user data!');
+  }
+
+  async updateConversations(
+    team_id: string,
+    channelId: string,
+    conversation: ChannelConversation,
+    channelConversations?: object
+  ) {
+    if (channelConversations === undefined) {
+      const data = await this.get(team_id);
+      channelConversations = data.channelConversations;
+    }
+    channelConversations[channelId] = conversation;
+
+    return await this.update(team_id, 'channelConversations', channelConversations);
   }
 
   async scanByLinkedBy(linkedByValue: string): Promise<WorkbotSchema[]> {

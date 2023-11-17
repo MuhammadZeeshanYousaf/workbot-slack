@@ -2,7 +2,8 @@ import { AllMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
 import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { workbotClient } from '~/clients/workbot.client';
-import { ErrorMessages, PostQueryParams, STATUSCODE } from '~/globals';
+import { WorkbotSchema } from '~/database/schema';
+import { ChannelConversation, ErrorMessages, PostQueryParams, STATUSCODE } from '~/globals';
 import { unlinkCompanyBlock } from '~/slack/blocks';
 
 export const queryHandler = async (
@@ -22,8 +23,8 @@ export const queryHandler = async (
     const { linkedCompanyUuid } = data;
     let channelConversations = data.channelConversations;
     if (!channelConversations) channelConversations = {};
-    let conversationUuid = channelConversations?.[channelId][0];
-    const conversationOwnerEmail = channelConversations?.[channelId][1];
+    let conversationUuid = channelConversations?.[channelId]?.conversationUuid;
+    const conversationOwnerEmail = channelConversations?.[channelId]?.ownerEmail;
 
     if (
       linkedCompanyUuid !== undefined &&
@@ -47,9 +48,9 @@ export const queryHandler = async (
 
         if (conversationResponse.status === STATUSCODE.CREATED) {
           conversationUuid = conversationResponse.uuid;
-          channelConversations[channelId] = [conversationUuid, userEmail];
+          const newConversation: ChannelConversation = { conversationUuid: conversationUuid, ownerEmail: userEmail };
 
-          await database.update(teamId, 'channelConversations', channelConversations);
+          await database.updateConversations(teamId, channelId, newConversation, channelConversations);
         } else {
           return await say('Error in creating your conversation!');
         }
