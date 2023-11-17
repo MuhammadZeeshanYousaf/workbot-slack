@@ -2,7 +2,6 @@ import { AllMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
 import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { workbotClient } from '~/clients/workbot.client';
-import { WorkbotSchema } from '~/database/schema';
 import { ChannelConversation, ErrorMessages, PostQueryParams, STATUSCODE } from '~/globals';
 import { unlinkCompanyBlock } from '~/slack/blocks';
 
@@ -66,7 +65,6 @@ export const queryHandler = async (
           userToken: userToken,
           companyUuid: linkedCompanyUuid
         });
-
 
         if (+conversationResponse.status == STATUSCODE.CREATED) {
           conversationUuid = conversationResponse.uuid;

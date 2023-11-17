@@ -1,3 +1,11 @@
+export interface SlackInstallation {
+  bot: {
+    id?: string;
+    token: string;
+    userId?: string;
+  };
+}
+
 export type WorkhubUser = {
   email?: string;
   fullName?: string;

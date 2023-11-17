@@ -1,7 +1,7 @@
 # Add files here which should not be part of the docker image
 .git
 .gitignore
-.env.example
+.env.local
 .vscode
 .prettierrc
 .DS_Store

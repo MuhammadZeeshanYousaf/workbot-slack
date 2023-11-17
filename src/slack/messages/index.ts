@@ -1,12 +1,10 @@
 import { app } from '~/app';
-import { queryHandler } from '~/slack/commands/handlers';
-import { MENTION_MSG } from '~/slack/blocks';
+import { queryHandler } from '~/slack/messages/handlers';
 
 // Listens to incoming messages from Messages tab
 app.message(async args => {
   // Filter out message events with subtypes (see https://api.slack.com/events/message)
   const {
-    say,
     client: { users },
     context: { userId: userId },
     message,

@@ -1,4 +1,4 @@
-import { AllMiddlewareArgs, SlackActionMiddlewareArgs, SlackCommandMiddlewareArgs } from '@slack/bolt';
+import { AllMiddlewareArgs, SlackCommandMiddlewareArgs } from '@slack/bolt';
 import { connectWorkhubHandler } from '~/slack/actions/handlers';
 
 export const linkCompanySlashHandler = async (args: SlackCommandMiddlewareArgs & AllMiddlewareArgs) => {

@@ -4,7 +4,7 @@ import { WorkbotSchema } from '~/database/schema';
 import { database } from '~/app';
 import { SlackInstallation } from '~/globals';
 
-export class DbInstallationStore implements InstallationStore {
+export class DBInstallationStore implements InstallationStore {
   constructor() {}
 
   async storeInstallation(installation: Installation, logger?: Logger): Promise<any> {
