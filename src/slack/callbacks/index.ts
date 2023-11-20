@@ -1,6 +1,8 @@
 import { CallbackOptions, InstallURLOptions, Installation } from '@slack/oauth';
+import { WebClient } from '@slack/web-api';
 import { IncomingMessage, ServerResponse } from 'http';
 import { thankyoupage } from '~/globals/thankyou';
+import { welcomeBlock } from '../blocks/welcome.block';
 
 export class SlackCallbacks implements CallbackOptions {
   constructor() {}
@@ -29,5 +31,15 @@ export class SlackCallbacks implements CallbackOptions {
     const htmlResponse = thankyoupage({ redirectUrl: redirectUrl, browserUrl: browserUrl });
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(htmlResponse);
+
+    if (installation.bot !== undefined) {
+      // Send a welcome message to the user as a DM
+      const client = new WebClient(installation.bot.token);
+      const message = client.chat.postMessage({
+        token: installation.bot.token,
+        channel: installation.user.id,
+        blocks: welcomeBlock(installation.user.id)
+      });
+    }
   }
 }

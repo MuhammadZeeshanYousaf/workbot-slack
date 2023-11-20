@@ -4,12 +4,13 @@ import { WorkbotSchema } from '~/database/schema';
 import { database } from '~/app';
 import { SlackInstallation } from '~/globals';
 
-export class DbInstallationStore implements InstallationStore {
+export class DBInstallationStore implements InstallationStore {
   constructor() {}
 
   async storeInstallation(installation: Installation, logger?: Logger): Promise<any> {
     if (installation.team?.id !== undefined && installation.bot?.token !== undefined) {
-      const data: WorkbotSchema = {
+      const prevInstallation = await database.get(installation.team.id);
+      let data: WorkbotSchema = {
         teamId: installation.team.id,
         botId: installation.bot.id,
         botToken: installation.bot.token,
@@ -22,6 +23,17 @@ export class DbInstallationStore implements InstallationStore {
         installedAt: new Date().toISOString(),
         uninstalledAt: null
       };
+
+      if (prevInstallation !== undefined) {
+        data = {
+          ...data,
+          linkedCompanyUuid: prevInstallation.linkedCompanyUuid,
+          linkedBy: prevInstallation.linkedBy,
+          channelConversations: prevInstallation.channelConversations,
+          installedAt: new Date().toISOString()
+        };
+      }
+
       return await database.set(data);
     }
 

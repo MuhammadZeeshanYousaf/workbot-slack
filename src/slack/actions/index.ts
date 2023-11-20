@@ -1,4 +1,4 @@
-import { app, database } from '~/app';
+import { app } from '~/app';
 import { SlackActions } from '~/globals';
 import { connectWorkhubHandler, linkCompanyHandler, unlinkCompanyHandler } from './handlers';
 

@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
-import jwt from 'jsonwebtoken';
 import FormData from 'form-data';
 import { STATUSCODE } from '~/globals';
 

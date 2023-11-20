@@ -1,30 +1,44 @@
 import { ChatPostMessageResponse } from '@slack/web-api';
 import { BaseClient } from './base.client';
-import { AllMiddlewareArgs, Logger, SlackCommandMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
-import { PostQueryParams, STATUSCODE } from '~/globals';
+import { AllMiddlewareArgs, SlackCommandMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
+import { ChannelConversation, PostQueryParams, STATUSCODE } from '~/globals';
 import { database } from '~/app';
 import mrkdwn from 'html-to-mrkdwn';
+import { adminClient } from './admin.client';
 
 class Workbot extends BaseClient {
   constructor() {
     super(process.env.WORKBOT_API_URL!);
   }
 
-  async createConversation({ userToken, companyUuid }, logger?: Logger) {
+  async createConversation({ userToken, companyUuid }) {
     try {
       const {
         status,
         data: { uuid }
       } = await this.axios.post(
-        `companies/${companyUuid}/conversations`,
+        `/companies/${companyUuid}/conversations`,
         { name: 'New Slack Chat' },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
 
       return { uuid: uuid, status: status };
     } catch (e) {
-      logger?.error(e);
-      return { status: e.status };
+      return { uuid: null, status: e?.response?.status };
+    }
+  }
+
+  async addConversationMember({ ownerToken, conversationUuid, memberUuid }) {
+    try {
+      const { status } = await this.axios.post(
+        `/conversations/${conversationUuid}/users`,
+        { conversation_users: [memberUuid] },
+        { headers: { Authorization: `Bearer ${ownerToken}` } }
+      );
+
+      return { status: status };
+    } catch (e) {
+      return { status: e?.response?.status };
     }
   }
 
@@ -35,7 +49,17 @@ class Workbot extends BaseClient {
     message: ChatPostMessageResponse,
     retryOnError = true
   ) {
-    let { userQuery, userToken, companyUuid, conversationUuid, channelConversations, channelId } = params;
+    let {
+      userQuery,
+      userToken,
+      userUuid,
+      userEmail,
+      ownerEmail,
+      companyUuid,
+      conversationUuid,
+      channelConversations,
+      channelId
+    } = params;
     const {
       client,
       context: { teamId: teamId },
@@ -71,7 +95,7 @@ class Workbot extends BaseClient {
               .update({
                 channel: message.channel!,
                 ts: message.ts!,
-                text: `${mrkdwn(queryResponse.join('')).text} `
+                text: `${mrkdwn(queryResponse.join('')).text}_`
               })
               .then(res => {
                 message = res;
@@ -89,7 +113,7 @@ class Workbot extends BaseClient {
             .update({
               channel: message.channel!,
               ts: message.ts!,
-              text: `${mrkdwn(queryResponse.join('')).text} `
+              text: `${mrkdwn(queryResponse.join('')).text}`
             })
             .then(res => {
               message = res;
@@ -104,24 +128,39 @@ class Workbot extends BaseClient {
       return { status: response.status };
     } catch (error) {
       if (retryOnError) {
-        let conversationRes = await workbotClient.createConversation(
-          {
+
+        if (this.hasStatus(error, STATUSCODE.NOT_FOUND)) {
+          // conversation was deleted by another source, create new one
+          let conversationRes = await this.createConversation({
             userToken: userToken,
             companyUuid: companyUuid
-          },
-          logger
-        );
+          });
 
-        if (conversationRes?.status === STATUSCODE.CREATED) {
-          if (!channelConversations) channelConversations = {};
-          channelConversations[channelId] = conversationRes.uuid;
-          await database.update(teamId!, 'channelConversations', channelConversations);
-          this.postQueryResponse(
-            { ...params, conversationUuid: conversationRes.uuid, channelConversations: channelConversations },
-            args,
-            message,
-            false
-          );
+          if (+conversationRes.status == STATUSCODE.CREATED) {
+            if (!channelConversations) channelConversations = {};
+            conversationUuid = conversationRes.uuid;
+            const newConversation: ChannelConversation = { conversationUuid: conversationUuid, ownerEmail: userEmail };
+            await database.updateConversations(teamId!, channelId, newConversation, channelConversations);
+
+            this.postQueryResponse(
+              { ...params, conversationUuid: conversationUuid, channelConversations: channelConversations },
+              args,
+              message,
+              false
+            );
+          }
+        } else if (this.hasStatus(error, STATUSCODE.UNAUTHORIZED)) {
+          // add the user as member of this conversation
+          const ownerData = await adminClient.fetchUserData(ownerEmail);
+          const addConvRes = await this.addConversationMember({
+            ownerToken: ownerData.userToken,
+            conversationUuid: conversationUuid,
+            memberUuid: userUuid
+          });
+
+          if (+addConvRes.status == STATUSCODE.CREATED) {
+            this.postQueryResponse(params, args, message, false);
+          }
         }
       } else {
         logger?.error(error);

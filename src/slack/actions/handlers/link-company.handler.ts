@@ -5,7 +5,6 @@ import { linkCompanyBlock } from '~/slack/blocks';
 export const linkCompanyHandler = async ({
   action,
   context: { teamId: teamId },
-  say,
   respond,
   logger
 }: SlackActionMiddlewareArgs & AllMiddlewareArgs) => {

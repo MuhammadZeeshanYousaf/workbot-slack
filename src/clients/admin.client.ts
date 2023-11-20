@@ -9,7 +9,7 @@ class AdminClient extends AdminBaseClient {
   constructor() {
     super();
     this.workhubCompanies = [];
-    this.workhubUser = { userToken: '' };
+    this.workhubUser = { userToken: '', uuid: '' };
   }
 
   async fetchUserCompanies(email: string, token: string | null = null): Promise<Array<WorkHubCompany>> {
@@ -24,7 +24,7 @@ class AdminClient extends AdminBaseClient {
         });
         await this.setCompaniesCache(email);
       }
-    } else {
+    } else if (companiesCache) {
       return companiesCache;
     }
 
@@ -33,12 +33,26 @@ class AdminClient extends AdminBaseClient {
 
   async fetchUserData(email: string): Promise<WorkhubUser> {
     const cacheUser = await this.getUserCache(email);
-    const token = cacheUser?.userToken;
+    const userToken = cacheUser?.userToken,
+      userUuid = cacheUser?.uuid;
 
-    if (token === null || token === undefined || token.length === 0) {
-      this.workhubUser = await this.getUserWithEmail(email);
-      await this.setUserCache(email);
-    } else {
+    if (
+      userToken === null ||
+      userToken === undefined ||
+      userToken == 'null' ||
+      userToken == '' ||
+      userUuid === null ||
+      userUuid === undefined ||
+      userUuid == 'null' ||
+      userUuid === ''
+    ) {
+      try {
+        this.workhubUser = await this.getUserWithEmail(email);
+        await this.setUserCache(email);
+      } catch {
+        return this.workhubUser;
+      }
+    } else if (cacheUser) {
       return cacheUser as WorkhubUser;
     }
 

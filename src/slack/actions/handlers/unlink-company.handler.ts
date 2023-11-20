@@ -1,6 +1,7 @@
 import { database } from '~/app';
 import { AllMiddlewareArgs, SlackActionMiddlewareArgs } from '@slack/bolt';
 import { unlinkCompanyBlock } from '~/slack/blocks';
+import { Messages } from '~/globals';
 
 export const unlinkCompanyHandler = async ({
   action,
@@ -11,7 +12,7 @@ export const unlinkCompanyHandler = async ({
   if (action.type === 'button' && teamId !== undefined) {
     await database.update(teamId, 'linkedCompanyUuid', null);
 
-    await say(unlinkCompanyBlock('You have unlinked your WorkHub company successfully.'));
+    await say(unlinkCompanyBlock(Messages.CompanyUnlinked));
   } else {
     logger.error('Invalid Request!');
   }
