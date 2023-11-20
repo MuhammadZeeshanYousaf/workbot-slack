@@ -16,11 +16,9 @@ class Workbot extends BaseClient {
       const {
         status,
         data: { uuid }
-      } = await this.axios.post(
-        `/companies/${companyUuid}/conversations`,
-        { name: 'New Slack Chat' },
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
+      } = await this.axios.post(`/companies/${companyUuid}/conversations`, null, {
+        headers: { Authorization: `Bearer ${userToken}` }
+      });
 
       return { uuid: uuid, status: status };
     } catch (e) {
@@ -128,7 +126,6 @@ class Workbot extends BaseClient {
       return { status: response.status };
     } catch (error) {
       if (retryOnError) {
-
         if (this.hasStatus(error, STATUSCODE.NOT_FOUND)) {
           // conversation was deleted by another source, create new one
           let conversationRes = await this.createConversation({
