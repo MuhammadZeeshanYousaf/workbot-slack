@@ -24,7 +24,7 @@ class AdminClient extends AdminBaseClient {
         });
         await this.setCompaniesCache(email);
       }
-    } else {
+    } else if (companiesCache) {
       return companiesCache;
     }
 
@@ -39,10 +39,12 @@ class AdminClient extends AdminBaseClient {
     if (
       userToken === null ||
       userToken === undefined ||
-      userToken?.length === 0 ||
-      userUuid?.length === 0 ||
+      userToken == 'null' ||
+      userToken == '' ||
       userUuid === null ||
-      userUuid === undefined
+      userUuid === undefined ||
+      userUuid == 'null' ||
+      userUuid === ''
     ) {
       try {
         this.workhubUser = await this.getUserWithEmail(email);
@@ -50,7 +52,7 @@ class AdminClient extends AdminBaseClient {
       } catch {
         return this.workhubUser;
       }
-    } else {
+    } else if (cacheUser) {
       return cacheUser as WorkhubUser;
     }
 
