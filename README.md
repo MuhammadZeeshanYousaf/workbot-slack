@@ -28,6 +28,6 @@ Deployment: Use GitHub Actions
    **Note:** Always run npm install/remove/update commands inside the docker containers by SShing into them.
 
    ```bash
-   docker-compose exec container-name sh
+   docker-compose exec <container-name> sh
    npm install <package_name>
    ```
