@@ -14,9 +14,9 @@ Deployment: Use GitHub Actions
 
 ## Docker Environment Initialization
 
-1. Clone the project and move inside the [workhub-devenv](https://github.com/coeus-solutions/workhub-devenv)
+1. Clone the repository
 
-2. Create .env from local file and modify values accordingly
+2. Rename .env.local to .env and modify values accordingly
 
    ```bash
    cd ./
