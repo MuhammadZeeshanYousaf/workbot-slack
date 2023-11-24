@@ -2,7 +2,7 @@
 
 ## Production:
 
-App: APP URL goes here
+App: <https://workbot-slack.workhub.ai/>
 
 Deployment: Use GitHub Actions
 
