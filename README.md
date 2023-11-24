@@ -12,22 +12,15 @@ App: <https://workbot-slack.stage-workhub.de/>
 
 Deployment: Use GitHub Actions
 
-## Docker Environment Initialization
+## Setup
 
-1. Clone the repository
+Please use [workhub-devenv](https://github.com/coeus-solutions/workhub-devenv) for local setup of this and all relevant applications.
 
-2. Rename .env.local to .env and modify values accordingly
+After setup, you can initiate the app installation using endpoint: **/slack/install**
 
-   ```bash
-   cd ./
-   cp .env.local .env
-   ```
+**Note:** Always run npm install/remove/update commands inside the docker containers by SShing into them.
 
-3. After docker build and starting container, you can initiate the app installation using endpoint: **/slack/install**
-
-   **Note:** Always run npm install/remove/update commands inside the docker containers by SShing into them.
-
-   ```bash
-   docker-compose exec <container-name> sh
-   npm install <package_name>
-   ```
+```bash
+docker-compose exec <container-name> sh
+npm install <package_name>
+```
