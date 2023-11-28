@@ -16,9 +16,13 @@ class Workbot extends BaseClient {
       const {
         status,
         data: { uuid }
-      } = await this.axios.post(`/companies/${companyUuid}/conversations`, null, {
-        headers: { Authorization: `Bearer ${userToken}` }
-      });
+      } = await this.axios.post(
+        `/companies/${companyUuid}/conversations`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${userToken}` }
+        }
+      );
 
       return { uuid: uuid, status: status };
     } catch (e) {

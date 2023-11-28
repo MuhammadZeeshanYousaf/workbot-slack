@@ -13,7 +13,12 @@ export const connectWorkhubHandler = async ({
   if (teamId !== undefined) {
     const { linkedCompanyUuid } = await database.get(teamId);
 
-    if (linkedCompanyUuid === null) {
+    if (
+      linkedCompanyUuid === null ||
+      linkedCompanyUuid === undefined ||
+      linkedCompanyUuid == 'null' ||
+      linkedCompanyUuid == ''
+    ) {
       await respond({
         replace_original: false,
         text: Messages.CheckingAccount
