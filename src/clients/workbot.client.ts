@@ -97,7 +97,7 @@ class Workbot extends BaseClient {
               .update({
                 channel: message.channel!,
                 ts: message.ts!,
-                text: `${mrkdwn(queryResponse.join('')).text}_`
+                text: `${mrkdwn(queryResponse.join('')).text}|`
               })
               .then(res => {
                 message = res;
@@ -115,7 +115,7 @@ class Workbot extends BaseClient {
             .update({
               channel: message.channel!,
               ts: message.ts!,
-              text: `${mrkdwn(queryResponse.join('')).text}`
+              text: mrkdwn(queryResponse.join('')).text
             })
             .then(res => {
               message = res;
