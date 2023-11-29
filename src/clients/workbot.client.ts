@@ -16,9 +16,13 @@ class Workbot extends BaseClient {
       const {
         status,
         data: { uuid }
-      } = await this.axios.post(`/companies/${companyUuid}/conversations`, null, {
-        headers: { Authorization: `Bearer ${userToken}` }
-      });
+      } = await this.axios.post(
+        `/companies/${companyUuid}/conversations`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${userToken}` }
+        }
+      );
 
       return { uuid: uuid, status: status };
     } catch (e) {
@@ -93,7 +97,7 @@ class Workbot extends BaseClient {
               .update({
                 channel: message.channel!,
                 ts: message.ts!,
-                text: `${mrkdwn(queryResponse.join('')).text}_`
+                text: `${mrkdwn(queryResponse.join('')).text}|`
               })
               .then(res => {
                 message = res;
@@ -111,7 +115,7 @@ class Workbot extends BaseClient {
             .update({
               channel: message.channel!,
               ts: message.ts!,
-              text: `${mrkdwn(queryResponse.join('')).text}`
+              text: mrkdwn(queryResponse.join('')).text
             })
             .then(res => {
               message = res;

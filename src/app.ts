@@ -7,7 +7,7 @@ import { routes } from '~/routes';
 export const database = new Database();
 
 export const app = new App({
-  logLevel: LogLevel.DEBUG,
+  logLevel: LogLevel.ERROR,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
