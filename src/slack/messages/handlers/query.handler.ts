@@ -18,6 +18,8 @@ export const queryHandler = async (
   } = args;
 
   if (teamId !== undefined) {
+    const message = await say(Messages.Wait);
+
     const data = await database.get(teamId);
     const { linkedCompanyUuid } = data;
     let channelConversations = data.channelConversations;
@@ -32,7 +34,6 @@ export const queryHandler = async (
       linkedCompanyUuid != ''
     ) {
       // company is linked
-      const message = await say(Messages.Wait);
       const { userToken, uuid } = await adminClient.fetchUserData(userEmail);
 
       if (
