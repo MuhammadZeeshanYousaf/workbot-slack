@@ -35,9 +35,12 @@ export class SlackCallbacks implements CallbackOptions {
     if (installation.bot !== undefined) {
       // Send a welcome message to the user as a DM
       const client = new WebClient(installation.bot.token);
-      const message = client.chat.postMessage({
+      client.chat.postMessage({
         token: installation.bot.token,
         channel: installation.user.id,
+        text:
+          `Hi there <@${installation.user.id}> :wave: \nGreat to see you here!` +
+          '\n\n WorkBot is an AI platform that centralizes knowledge management and enables automations across the organization. Slack integration for WorkBot makes it easier to answer your queries within Slack.',
         blocks: welcomeBlock(installation.user.id)
       });
     }
