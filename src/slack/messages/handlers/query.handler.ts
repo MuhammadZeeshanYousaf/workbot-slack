@@ -3,7 +3,7 @@ import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { workbotClient } from '~/clients/workbot.client';
 import { ChannelConversation, Messages, PostQueryParams, STATUSCODE } from '~/globals';
-import { unlinkCompanyBlock } from '~/slack/blocks';
+import { basicBlock, unlinkCompanyBlock } from '~/slack/blocks';
 
 export const queryHandler = async (
   args: (SlackEventMiddlewareArgs<'app_mention'> | SlackEventMiddlewareArgs<'message'>) & AllMiddlewareArgs,
@@ -14,6 +14,7 @@ export const queryHandler = async (
   const {
     say,
     context: { teamId: teamId },
+    client,
     logger
   } = args;
 
@@ -47,7 +48,11 @@ export const queryHandler = async (
         uuid == ''
       ) {
         // not a workhub user
-        return await say(Messages.NoWorkhubAccount);
+        return await client.chat.update({
+          channel: message.channel!,
+          ts: message.ts!,
+          blocks: basicBlock(Messages.NoWorkhubAccount)
+        });
       }
 
       // an authorized workhub user
@@ -73,7 +78,11 @@ export const queryHandler = async (
 
           await database.updateConversations(teamId, channelId, newConversation, channelConversations);
         } else {
-          return await say(Messages.FailedToCreateConversation);
+          return await client.chat.update({
+            channel: message.channel!,
+            ts: message.ts!,
+            blocks: basicBlock(Messages.FailedToCreateConversation)
+          });
         }
       }
 
@@ -97,7 +106,11 @@ export const queryHandler = async (
 
         if (+addConversationRes.status !== STATUSCODE.CREATED) {
           // user was not added to conversation
-          return await say(Messages.FailedToAddMember);
+          return await client.chat.update({
+            channel: message.channel!,
+            ts: message.ts!,
+            blocks: basicBlock(Messages.FailedToAddMember)
+          });
         }
       }
 
@@ -116,7 +129,11 @@ export const queryHandler = async (
       await workbotClient.postQueryResponse(params, args, message);
     } else {
       // company was not linked
-      await say(unlinkCompanyBlock(Messages.NoLinkedCompany));
+      await client.chat.update({
+        channel: message.channel!,
+        ts: message.ts!,
+        blocks: basicBlock(Messages.NoLinkedCompany)
+      });
     }
   } else {
     logger.error('Invalid Request!');
