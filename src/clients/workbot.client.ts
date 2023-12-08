@@ -93,15 +93,11 @@ class Workbot extends BaseClient {
 
         if (chunk.length > 0) {
           try {
-            client.chat
-              .update({
-                channel: message.channel!,
-                ts: message.ts!,
-                text: `${mrkdwn(queryResponse.join('')).text}|`
-              })
-              .then(res => {
-                message = res;
-              });
+            await client.chat.update({
+              channel: message.channel!,
+              ts: message.ts!,
+              text: `${mrkdwn(queryResponse.join('')).text}|`
+            });
             return;
           } catch (e) {
             logger.error('Tier pause in message updating:', e.message);
@@ -111,19 +107,18 @@ class Workbot extends BaseClient {
 
       stream.on('end', () => {
         try {
-          client.chat
-            .update({
+          // Pause for 1 second due to Slack chat update API tier limitation.
+          setTimeout(() => {
+            client.chat.update({
               channel: message.channel!,
               ts: message.ts!,
               text: mrkdwn(queryResponse.join('')).text
-            })
-            .then(res => {
-              message = res;
             });
-          return;
+          }, 1000);
         } catch (e) {
           logger.error('Tier pause in message updating:', e.message);
         }
+
         stream.destroy();
       });
 
