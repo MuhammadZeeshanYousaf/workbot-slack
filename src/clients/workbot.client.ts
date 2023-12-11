@@ -71,7 +71,7 @@ class Workbot extends BaseClient {
     try {
       const response = await this.axios.post(
         `/conversations/${conversationUuid}/message`,
-        { content: userQuery, format_output: true },
+        { content: userQuery, format_output: true, output_mode: 'HTML', document_type: 'DEFAULT' },
         {
           headers: { Authorization: `Bearer ${userToken}` },
           responseType: 'stream'
