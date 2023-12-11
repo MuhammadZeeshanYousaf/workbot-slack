@@ -3,7 +3,7 @@ import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { workbotClient } from '~/clients/workbot.client';
 import { ChannelConversation, Messages, PostQueryParams, STATUSCODE } from '~/globals';
-import { basicBlock, unlinkCompanyBlock } from '~/slack/blocks';
+import { basicBlock } from '~/slack/blocks';
 
 export const queryHandler = async (
   args: (SlackEventMiddlewareArgs<'app_mention'> | SlackEventMiddlewareArgs<'message'>) & AllMiddlewareArgs,
