@@ -13,19 +13,12 @@ class AdminClient extends AdminBaseClient {
   }
 
   async fetchUserCompanies(email: string, token: string | null = null): Promise<Array<WorkHubCompany>> {
-    const companiesCache = await this.getCompaniesCache(email);
+    const { status, companies } = await this.getUserCompanies(email, token);
 
-    if (!companiesCache) {
-      const { status, companies } = await this.getUserCompanies(email, token);
-
-      if (companies !== undefined && status === STATUSCODE.SUCCESS) {
-        this.workhubCompanies = companies.map(company => {
-          return { name: company.name, uuid: company.uuid } as WorkHubCompany;
-        });
-        await this.setCompaniesCache(email);
-      }
-    } else if (companiesCache) {
-      return companiesCache;
+    if (companies !== undefined && status === STATUSCODE.SUCCESS) {
+      this.workhubCompanies = companies.map(company => {
+        return { name: company.name, uuid: company.uuid } as WorkHubCompany;
+      });
     }
 
     return this.workhubCompanies;
@@ -60,19 +53,6 @@ class AdminClient extends AdminBaseClient {
   }
 
   // Private methods
-
-  private async getCompaniesCache(email: string): Promise<Array<WorkHubCompany> | null> {
-    const cacheClient = await getCacheClient();
-    const companies = await cacheClient.get(`${process.env.REDIS_PREFIX}:${email}:companies`);
-    return companies && JSON.parse(companies);
-  }
-
-  private async setCompaniesCache(email: string) {
-    const cacheClient = await getCacheClient();
-    await cacheClient.set(`${process.env.REDIS_PREFIX}:${email}:companies`, JSON.stringify(this.workhubCompanies), {
-      EX: 86400 // Expiry (86400 sec = 1 day)
-    });
-  }
 
   private async getUserCache(email: string): Promise<WorkhubUser | null> {
     const cacheClient = await getCacheClient();
