@@ -2,7 +2,7 @@ import { app } from '~/app';
 import { HELP_MSG, MENTION_MSG } from '~/slack/blocks';
 import { linkCompanySlashHandler, unlinkCompanySlashHandler } from './handlers';
 
-app.command('/workbot', async args => {
+app.command(process.env.SLACK_SLASH_COMMAND!, async args => {
   const {
     ack,
     say,
