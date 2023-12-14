@@ -1,6 +1,12 @@
+import { AllMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
 import { app, database } from '~/app';
+import { handleAppHomeOpenedEventHandler } from './handlers';
 import { MENTION_MSG } from '~/slack/blocks';
 import { queryHandler } from '~/slack/messages/handlers';
+
+app.event('app_home_opened', async (args: SlackEventMiddlewareArgs<'app_home_opened'> & AllMiddlewareArgs) => {
+  await handleAppHomeOpenedEventHandler(args);
+});
 
 app.event('app_mention', async args => {
   const {
