@@ -1,7 +1,7 @@
 import { RespondArguments } from '@slack/bolt';
 import { Messages } from '~/globals';
 
-export const linkCompanyBlock = (companyName): RespondArguments => {
+export const linkCompanyBlock = companyName => {
   return {
     blocks: [
       {

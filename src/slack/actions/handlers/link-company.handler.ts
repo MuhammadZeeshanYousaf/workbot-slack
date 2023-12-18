@@ -1,13 +1,8 @@
 import { database } from '~/app';
-import { AllMiddlewareArgs, SlackActionMiddlewareArgs } from '@slack/bolt';
 import { linkCompanyBlock } from '~/slack/blocks';
+import { SlackActions } from '~/globals';
 
-export const linkCompanyHandler = async ({
-  action,
-  context: { teamId: teamId },
-  respond,
-  logger
-}: SlackActionMiddlewareArgs & AllMiddlewareArgs) => {
+export const linkCompanyHandler = async ({ body, client, action, context: { teamId: teamId }, respond, logger }) => {
   if (action?.type === 'static_select' && teamId !== undefined) {
     const {
       selected_option: {
@@ -18,7 +13,30 @@ export const linkCompanyHandler = async ({
 
     await database.update(teamId, 'linkedCompanyUuid', selectedCompanyUuid);
 
-    await respond(linkCompanyBlock(selectedCompanyName));
+    // Update view with success message
+    try {
+      await client.views.update({
+        view_id: body.view.id,
+        // Pass the current hash to avoid race conditions
+        hash: body.view.hash,
+        view: {
+          type: 'modal',
+          // View identifier
+          callback_id: SlackActions.LinkCompanyViewId,
+          title: {
+            type: 'plain_text',
+            text: SlackActions.LinkCompanyViewTitle
+          },
+          blocks: linkCompanyBlock(selectedCompanyName).blocks,
+          close: {
+            type: 'plain_text',
+            text: 'Close'
+          }
+        }
+      });
+    } catch {
+      logger.error(`INFO ${SlackActions.LinkCompanyViewTitle} operation canceled.`);
+    }
   } else {
     logger.error('Invalid Request!');
   }
