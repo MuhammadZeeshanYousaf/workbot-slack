@@ -1,5 +1,5 @@
 import { AllMiddlewareArgs, SlackEventMiddlewareArgs } from '@slack/bolt';
-import { SlackActions } from '~/globals';
+import { welcomeBlock } from '~/slack/blocks';
 
 export const handleAppHomeOpenedEventHandler = async ({
   event,
@@ -18,40 +18,9 @@ export const handleAppHomeOpenedEventHandler = async ({
       });
 
       const userName = user?.profile?.real_name;
+      const userId = user?.id;
 
-      await say({
-        blocks: [
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text:
-                'Hi there' +
-                ` *${userName}*` +
-                ' :wave: \n Great to see you here! \n\n WorkBot is an AI platform that centralizes knowledge management and enables automations across the organization. Slack integration for WorkBot makes it easier to answer your queries within Slack. \
-                \n • To ask from your WorkBot use: ' +
-                `*@WorkBot* _[question]_` +
-                '\n • To link company `/workbot link`\
-                \n • To unlink company `/workbot unlink`\
-                \n • For help use `/workbot help`'
-            }
-          },
-          {
-            type: 'actions',
-            elements: [
-              {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: SlackActions.ConnectWorkhubText
-                },
-                action_id: SlackActions.ConnectWorkhubId,
-                style: 'primary'
-              }
-            ]
-          }
-        ]
-      });
+      await say({ blocks: welcomeBlock(userId) });
     }
   }
 };

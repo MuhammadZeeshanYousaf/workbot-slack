@@ -2,7 +2,7 @@ import { CallbackOptions, InstallURLOptions, Installation } from '@slack/oauth';
 import { WebClient } from '@slack/web-api';
 import { IncomingMessage, ServerResponse } from 'http';
 import { thankyoupage } from '~/globals/thankyou';
-import { welcomeBlock } from '../blocks/welcome.block';
+import { welcomeBlock } from '~/slack/blocks';
 
 export class SlackCallbacks implements CallbackOptions {
   constructor() {}

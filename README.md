@@ -21,6 +21,6 @@ After setup, you can initiate the app installation using endpoint: **/slack/inst
 **Note:** Always run npm install/remove/update commands inside the docker containers by SShing into them.
 
 ```bash
-docker-compose exec <container-name> sh
+docker exec -it <container_name> /bin/bash
 npm install <package_name>
 ```

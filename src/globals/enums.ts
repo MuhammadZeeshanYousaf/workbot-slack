@@ -16,9 +16,13 @@ export enum SlackActions {
   SelectCompanyId = 'select_company',
   LinkCompanyText = 'Link Company',
   LinkCompanyId = 'link_company',
+  LinkCompanyViewTitle = 'Link WorkHub Company',
+  LinkCompanyViewId = 'link_company_view',
   UnlinkCompanyText = 'Unlink Company',
   UnlinkCompanyId = 'unlink_company',
-  LinkAgain = 'Link Again'
+  LinkAgain = 'Link Again',
+  ViewCancel = 'Cancel',
+  ViewClose = 'Close'
 }
 
 export enum Messages {

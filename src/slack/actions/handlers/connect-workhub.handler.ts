@@ -1,16 +1,39 @@
 import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
-import { Messages, WorkHubCompany } from '~/globals';
-import { AllMiddlewareArgs, SlackActionMiddlewareArgs, SlackCommandMiddlewareArgs } from '@slack/bolt';
-import { companiesBlock } from '~/slack/blocks';
+import { Messages, SlackActions, WorkHubCompany } from '~/globals';
+import { basicBlock, companiesBlock, updateView } from '~/slack/blocks';
 
 export const connectWorkhubHandler = async ({
-  client: { users },
+  body,
+  client: { users, views },
   context: { teamId: teamId, userId: userId },
-  respond,
   logger
-}: (SlackCommandMiddlewareArgs | SlackActionMiddlewareArgs) & AllMiddlewareArgs) => {
+}) => {
   if (teamId !== undefined) {
+    let result;
+    try {
+      // Open view with waiting message within 3 seconds
+      result = await views.open({
+        trigger_id: body.trigger_id,
+        view: {
+          type: 'modal',
+          // View identifier
+          callback_id: SlackActions.LinkCompanyViewId,
+          title: {
+            type: 'plain_text',
+            text: SlackActions.LinkCompanyViewTitle
+          },
+          blocks: basicBlock(Messages.CheckingAccount),
+          close: {
+            type: 'plain_text',
+            text: 'Cancel'
+          }
+        }
+      });
+    } catch (error) {
+      logger.error(`Error in opening '${SlackActions.LinkCompanyViewTitle}' view:`, error);
+    }
+
     const { linkedCompanyUuid } = await database.get(teamId);
 
     if (
@@ -19,11 +42,6 @@ export const connectWorkhubHandler = async ({
       linkedCompanyUuid == 'null' ||
       linkedCompanyUuid == ''
     ) {
-      await respond({
-        replace_original: false,
-        text: Messages.CheckingAccount
-      });
-
       const { user } = await users.info({
         user: userId!
       });
@@ -32,21 +50,39 @@ export const connectWorkhubHandler = async ({
       const companies: Array<WorkHubCompany> = await adminClient.fetchUserCompanies(userEmail);
 
       if (companies.length < 1) {
-        await respond({
-          replace_original: false,
-          text: Messages.NoWorkhubAccount
-        });
+        // Update view with No workhub account message
+        await updateView(
+          {
+            viewClient: views,
+            view: result.view,
+            closeText: SlackActions.ViewClose,
+            updatedBlock: basicBlock(Messages.NoWorkhubAccount)
+          },
+          logger
+        );
       } else {
-        try {
-          await respond(companiesBlock(companies));
-        } catch (e) {
-          logger.error(e);
-        } finally {
-          await database.update(teamId, 'linkedBy', userEmail);
-        }
+        // Update view with companies dropdown
+        await updateView(
+          {
+            viewClient: views,
+            view: result.view,
+            closeText: SlackActions.ViewCancel,
+            updatedBlock: companiesBlock(companies).blocks
+          },
+          logger
+        );
       }
     } else {
-      await respond({ replace_original: false, text: Messages.CompanyAlreadyLinked });
+      // Update view with company already linked message
+      await updateView(
+        {
+          viewClient: views,
+          view: result.view,
+          closeText: SlackActions.ViewClose,
+          updatedBlock: basicBlock(Messages.CompanyAlreadyLinked)
+        },
+        logger
+      );
     }
   } else {
     logger.error('Invalid Request!');

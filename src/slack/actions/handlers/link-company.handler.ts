@@ -1,13 +1,8 @@
 import { database } from '~/app';
-import { AllMiddlewareArgs, SlackActionMiddlewareArgs } from '@slack/bolt';
-import { linkCompanyBlock } from '~/slack/blocks';
+import { linkCompanyBlock, updateView } from '~/slack/blocks';
+import { SlackActions } from '~/globals';
 
-export const linkCompanyHandler = async ({
-  action,
-  context: { teamId: teamId },
-  respond,
-  logger
-}: SlackActionMiddlewareArgs & AllMiddlewareArgs) => {
+export const linkCompanyHandler = async ({ body, client: { views }, action, context: { teamId: teamId }, logger }) => {
   if (action?.type === 'static_select' && teamId !== undefined) {
     const {
       selected_option: {
@@ -18,7 +13,16 @@ export const linkCompanyHandler = async ({
 
     await database.update(teamId, 'linkedCompanyUuid', selectedCompanyUuid);
 
-    await respond(linkCompanyBlock(selectedCompanyName));
+    // Update view with success message
+    await updateView(
+      {
+        viewClient: views,
+        view: body.view,
+        closeText: SlackActions.ViewClose,
+        updatedBlock: linkCompanyBlock(selectedCompanyName).blocks
+      },
+      logger
+    );
   } else {
     logger.error('Invalid Request!');
   }

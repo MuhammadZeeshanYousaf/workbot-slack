@@ -1,7 +1,6 @@
-import { RespondArguments } from '@slack/bolt';
 import { SlackActions } from '~/globals';
 
-export const companiesBlock = (companies): RespondArguments => {
+export const companiesBlock = companies => {
   const companyOptions = companies.map(company => {
     return {
       text: {
