@@ -3,7 +3,7 @@ import { database } from '~/app';
 import { adminClient } from '~/clients/admin.client';
 import { workbotClient } from '~/clients/workbot.client';
 import { ChannelConversation, Messages, PostQueryParams, STATUSCODE } from '~/globals';
-import { basicBlock } from '~/slack/blocks';
+import { basicBlock, unlinkCompanyBlock } from '~/slack/blocks';
 
 export const queryHandler = async (
   args: (SlackEventMiddlewareArgs<'app_mention'> | SlackEventMiddlewareArgs<'message'>) & AllMiddlewareArgs,
@@ -132,7 +132,7 @@ export const queryHandler = async (
       await client.chat.update({
         channel: message.channel!,
         ts: message.ts!,
-        blocks: basicBlock(Messages.NoLinkedCompany)
+        blocks: unlinkCompanyBlock(Messages.NoLinkedCompany).blocks
       });
     }
   } else {
