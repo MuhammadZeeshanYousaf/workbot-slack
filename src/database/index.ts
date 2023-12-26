@@ -93,6 +93,30 @@ export class Database {
     throw new Error('Error in updating user data!');
   }
 
+  async unLinkCompany(team_id: string) {
+    try {
+      const command = new UpdateCommand({
+        TableName: this.TableName,
+        Key: {
+          teamId: team_id
+        },
+        UpdateExpression: `set linkedCompanyUuid = :Null, channelConversations = :Empty`,
+        ExpressionAttributeValues: {
+          ':Null': null,
+          ':Empty': {}
+        },
+        ReturnValues: 'ALL_NEW'
+      });
+
+      const updated = await this.DocClient.send(command);
+      return updated.Attributes;
+    } catch (e) {
+      console.error(e);
+    }
+
+    throw new Error('Error in unlinking company data!');
+  }
+
   async updateConversations(
     team_id: string,
     channelId: string,
