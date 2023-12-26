@@ -1,6 +1,6 @@
 import { database } from '~/app';
-import { linkCompanyBlock, updateView } from '~/slack/blocks';
-import { SlackActions } from '~/globals';
+import { linkCompanyBlock } from '~/slack/blocks';
+import { updateView } from '~/slack/views/helpers';
 
 export const linkCompanyHandler = async ({ body, client: { views }, action, context: { teamId: teamId }, logger }) => {
   if (action?.type === 'static_select' && teamId !== undefined) {
@@ -18,7 +18,6 @@ export const linkCompanyHandler = async ({ body, client: { views }, action, cont
       {
         viewClient: views,
         view: body.view,
-        closeText: SlackActions.ViewClose,
         updatedBlock: linkCompanyBlock(selectedCompanyName).blocks
       },
       logger

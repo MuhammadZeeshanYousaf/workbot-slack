@@ -14,6 +14,7 @@ export enum SlackActions {
   ConnectWorkhubId = 'connect_workhub_company',
   SelectCompanyText = 'Select Company',
   SelectCompanyId = 'select_company',
+  SelectCompanyBlockId = 'select_input_block',
   LinkCompanyText = 'Link Company',
   LinkCompanyId = 'link_company',
   LinkCompanyViewTitle = 'Link WorkHub Company',
@@ -35,5 +36,6 @@ export enum Messages {
   CompanyLinked = '_You have successfully linked_',
   FailedToCreateConversation = '_Failed to establish your conversation with WorkBot!_',
   FailedToAddMember = '_Failed to add you to this conversation!_ \n\nEither you are not a part of linked WorkHub company or you do not have exisiting WorkHub account.',
-  NoWorkhubAccount = "_You don't have an existing account on WorkHub. In order to use this app, you must have a WorkHub account, Please <https://www.workhub.ai/contact/|contact> our support team for more information or get yourself registered <https://app.workhub.ai/signup/workbot|here>._"
+  NoWorkhubAccount = "_You don't have an existing account on WorkHub. In order to use this app, you must have a WorkHub account, Please <https://www.workhub.ai/contact/|contact> our support team for more information or get yourself registered <https://app.workhub.ai/signup/workbot|here>._",
+  SomethingWrong = 'Something went wrong, please try again later!'
 }
