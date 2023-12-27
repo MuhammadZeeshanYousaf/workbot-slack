@@ -14,7 +14,7 @@ export const unlinkCompanySlashHandler = async ({
     if (linkedCompanyUuid === null) {
       await respond(unlinkCompanyBlock(Messages.NoCompanyLinkedYet));
     } else {
-      await database.update(teamId, 'linkedCompanyUuid', null);
+      await database.unLinkCompany(teamId);
 
       await respond(unlinkCompanyBlock(Messages.CompanyUnlinked, SlackActions.LinkAgain));
     }

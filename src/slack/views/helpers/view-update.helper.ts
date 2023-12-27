@@ -1,9 +1,9 @@
 import { Logger } from '@slack/bolt';
 import { SlackActions } from '~/globals';
 
-export const updateView = async ({ viewClient, view, closeText, updatedBlock }, logger?: Logger) => {
+export const updateView = async ({ viewClient, view, updatedBlock }, logger?: Logger) => {
   try {
-    await viewClient.update({
+    return await viewClient.update({
       view_id: view.id,
       // Pass the current hash to avoid race conditions
       hash: view.hash,
@@ -18,7 +18,7 @@ export const updateView = async ({ viewClient, view, closeText, updatedBlock }, 
         blocks: updatedBlock,
         close: {
           type: 'plain_text',
-          text: closeText
+          text: SlackActions.ViewClose
         }
       }
     });
